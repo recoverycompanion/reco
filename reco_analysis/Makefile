@@ -13,11 +13,11 @@ PYTHON_INTERPRETER = python
 PROFILE = default
 
 ## Install Python Dependencies
-.PHONY: requirements
-requirements:
-	$(PYTHON_INTERPRETER) -m pip install -U pip
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-
+.PHONY: install
+install:
+	pip install --upgrade pip
+	poetry --version || pip install poetry==1.8.3
+	poetry install
 
 
 ## Delete all compiled Python files
@@ -29,32 +29,35 @@ clean:
 ## Lint using flake8 and black (use `make format` to do formatting)
 .PHONY: lint
 lint:
-	flake8 reco_analysis
-	isort --check --diff --profile black reco_analysis
-	black --check --config pyproject.toml reco_analysis
+	poetry run flake8 reco_analysis
+	poetry run isort --check --diff --profile black reco_analysis
+	poetry run black --check --config pyproject.toml reco_analysis
 
 ## Format source code with black
 .PHONY: format
 format:
-	black --config pyproject.toml reco_analysis
+	poetry run black --config pyproject.toml reco_analysis
+	poetry run isort --profile black reco_analysis
 
 
 ## Download Data from storage system
 .PHONY: sync_data_down
 sync_data_down:
-	aws s3 sync s3://reco/data/\
+	poetry run aws s3 sync s3://reco/data/\
 		data/
 
 
 ## Upload Data to storage system
 .PHONY: sync_data_up
 sync_data_up:
-	aws s3 sync data/ s3://reco/data/\
+	poetry run aws s3 sync data/ s3://reco/data/\
 		#  --profile $(PROFILE)
 
-
-
-
+aws_configure:
+	# only configure if not already configured
+	@if ! aws configure --profile $(PROFILE) list; then \
+		aws configure --profile $(PROFILE); \
+	fi
 
 
 #################################################################################
@@ -63,9 +66,9 @@ sync_data_up:
 
 
 ## Make Dataset
-.PHONY: data
-data: requirements
-	$(PYTHON_INTERPRETER) reco_analysis/data/make_dataset.py
+# .PHONY: data
+# data: install
+# 	$(PYTHON_INTERPRETER) reco_analysis/data/make_dataset.py
 
 
 #################################################################################

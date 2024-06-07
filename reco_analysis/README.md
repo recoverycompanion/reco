@@ -60,3 +60,19 @@ RECO: Recovery Companion, to monitor patients with heart failure on their recove
 
 --------
 
+## First-time setup
+
+```{bash}
+make install
+make aws_configure
+```
+
+## Syncing data
+
+```{bash}
+make sync_data_down  # to download data
+```
+
+```{bash}
+make sync_data_up  # to upload data
+```

@@ -10,13 +10,13 @@ PYTHON_INTERPRETER = python
 # COMMANDS                                                                      #
 #################################################################################
 
+PROFILE = default
 
 ## Install Python Dependencies
 .PHONY: requirements
 requirements:
 	$(PYTHON_INTERPRETER) -m pip install -U pip
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
 
 
 
@@ -42,16 +42,16 @@ format:
 ## Download Data from storage system
 .PHONY: sync_data_down
 sync_data_down:
-	aws s3 sync s3://reco_dev/data/\
-		data/ 
-	
+	aws s3 sync s3://reco/data/\
+		data/
+
 
 ## Upload Data to storage system
 .PHONY: sync_data_up
 sync_data_up:
-	aws s3 sync s3://reco_dev/data/ data/\
-		 --profile $(PROFILE)
-	
+	aws s3 sync data/ s3://reco/data/\
+		#  --profile $(PROFILE)
+
 
 
 

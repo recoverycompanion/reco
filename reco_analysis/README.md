@@ -62,10 +62,24 @@ RECO: Recovery Companion, to monitor patients with heart failure on their recove
 
 ## First-time setup
 
+The following installs python 3.11.7 and poetry 1.8.3, if not already installed, as well as the project dependencies, including dev dependencies like AWS CLI.
+
 ```{bash}
 make install
+```
+
+Then, configure AWS CLI:
+
+```{bash}
 make aws_configure
 ```
+
+Then enter your AWS credentials as follows:
+
+- AWS Access Key ID [None]: copy this from lastpass note
+- AWS Secret Access Key [None]: copy this from lastpass note
+- Default region name [None]: `us-west-2`
+- Default output format [None]: `json`
 
 ## Syncing data
 

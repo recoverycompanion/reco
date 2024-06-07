@@ -3,7 +3,8 @@
 #################################################################################
 
 PROJECT_NAME = reco_analysis
-PYTHON_VERSION = 3.11
+PYTHON_VERSION = 3.11.7
+POETRY_VERSION = 1.8.3
 PYTHON_INTERPRETER = python
 S3_BUCKET = s3://reco
 PROFILE = default
@@ -13,11 +14,36 @@ PROFILE = default
 #################################################################################
 
 
-## Install Python Dependencies
+## Install Python and its dependencies
 .PHONY: install
 install:
-	pip install --upgrade pip
-	poetry --version || pip install poetry==1.8.3
+	# Check if Python 3.11.7 is installed, and install it if not
+	if ! pyenv versions --bare | grep -q $(PYTHON_VERSION); then \
+		echo "Python $(PYTHON_VERSION) is not installed. Installing..."; \
+		pyenv install $(PYTHON_VERSION); \
+	fi
+
+	# Switch to the specified Python version
+	pyenv global $(PYTHON_VERSION)
+
+	# Ensure pip is upgraded
+	python -m pip install --upgrade pip
+
+	# Check if Poetry is installed and its version
+	@if command -v poetry &> /dev/null; then \
+		CURRENT_VERSION=$$(poetry --version | sed -E 's/[^0-9.]*([0-9.]+).*/\1/'); \
+		if [ "$$CURRENT_VERSION" != "$(POETRY_VERSION)" ]; then \
+			echo "Poetry version is $$CURRENT_VERSION. Installing Poetry $(POETRY_VERSION)..."; \
+			pip install --force-reinstall poetry==$(POETRY_VERSION); \
+		else \
+			echo "Poetry $(POETRY_VERSION) is already installed."; \
+		fi \
+	else \
+		echo "Poetry is not installed. Installing Poetry $(POETRY_VERSION)..."; \
+		pip install poetry==$(POETRY_VERSION); \
+	fi
+
+	# Install dependencies
 	poetry install
 
 

@@ -17,6 +17,8 @@ HOST = "ec2-$(SERVER_IP_DASHED).$(REGION).compute.amazonaws.com"
 # COMMANDS                                                                      #
 #################################################################################
 
+diagnose_path:
+	@echo "Current PATH: $(PATH)"
 
 ## Setup on new system, from a bare Ubuntu machine
 .PHONY: new_setup
@@ -31,12 +33,14 @@ new_setup:
 
 	# Find pyenv first
 	if ! command -v pyenv &> /dev/null; then \
-		sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev; \
+		echo "Installing pyenv..."; \
 		curl https://pyenv.run | bash; \
 		echo 'export PATH="$$HOME/.pyenv/bin:$$PATH"' >> ~/.bashrc; \
 		echo 'eval "$$(pyenv init --path)"' >> ~/.bashrc; \
 		echo 'eval "$$(pyenv init -)"' >> ~/.bashrc; \
 		source ~/.bashrc; \
+	else \
+		echo "Pyenv is already installed."; \
 	fi
 
 	# Check if Python 3.11.7 is installed, and install it if not

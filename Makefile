@@ -9,7 +9,9 @@ PYTHON_INTERPRETER = python
 PEM_FILE = "jupyter-key.pem"
 SERVER_USER = "ubuntu"
 SERVER_IP = $(shell cat ec2_ip.txt)
-HOST = "ec2-$(SERVER_IP).compute-1.amazonaws.com"
+SERVER_IP_DASHED = $(shell cat ec2_ip.txt | sed 's/\./-/g')
+REGION = "us-west-2"
+HOST = "ec2-$(SERVER_IP_DASHED).$(REGION).compute.amazonaws.com"
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -26,6 +28,20 @@ new_setup:
 
 	# Install system dependencies
 	sudo apt-get update
+
+	# Find pyenv first
+	if ! command -v pyenv &> /dev/null; then \
+		sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev; \
+		curl https://pyenv.run | bash; \
+
+		# Add pyenv to bashrc
+		echo 'export PATH="$$HOME/.pyenv/bin:$$PATH"' >> ~/.bashrc; \
+		echo 'eval "$$(pyenv init --path)"' >> ~/.bashrc; \
+		echo 'eval "$$(pyenv init -)"' >> ~/.bashrc; \
+
+		# Reload bashrc
+		source ~/.bashrc; \
+	fi
 
 	# Check if Python 3.11.7 is installed, and install it if not
 	if ! pyenv versions --bare | grep -q $(PYTHON_VERSION); then \

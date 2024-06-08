@@ -18,6 +18,21 @@ cd yourprojectname
 pip install -r requirements.txt
 ```
 
+## Package Management
+
+###Poetry Overview
+
+Poetry is a tool that helps us manage Python packages and dependencies seamlessly across our team.
+
+###Initial Setup
+
+First, it’s best to make sure you are not already using a virtual environment, especially when installing poetry. Poetry will manage your environment for you. If you’re using Anaconda, you can check your environments using `conda info --envs`. To deactivate an Anaconda environment, use `conda deactivate` To install poetry on your machine, follow [these instructions](https://python-poetry.org/docs/) (installation command is `pipx install poetry`).
+
+###Managing Dependencies
+
+Dependencies are managed in the all important pyproject.toml file, which contains the package requirements for our project. If we need another package as we continue working on it, we add it to the pyproject.toml as a requirement. To ensure you have the proper packages for our app, once poetry is installed, navigate to the reco-analysis folder of our repo. In this folder, run `poetry update`. This will have you add the packages needed for our project. To activate a shell with all the requirements met, run `poetry shell`.
+
+
 ## Usage
 
 A few snippets showing the simplest use case for your project. This section can include code blocks or CLI commands:

@@ -17,6 +17,8 @@ HOST = "ec2-$(SERVER_IP_DASHED).$(REGION).compute.amazonaws.com"
 # COMMANDS                                                                      #
 #################################################################################
 
+SHELL := /bin/bash
+
 diagnose_path:
 	@echo "Current PATH: $(PATH)"
 
@@ -35,13 +37,17 @@ new_setup:
 	if ! command -v pyenv &> /dev/null; then \
 		echo "Installing pyenv..."; \
 		curl https://pyenv.run | bash; \
+		echo 'export PYENV_ROOT="$$HOME/.pyenv"' >> ~/.bashrc; \
 		echo 'export PATH="$$HOME/.pyenv/bin:$$PATH"' >> ~/.bashrc; \
 		echo 'eval "$$(pyenv init --path)"' >> ~/.bashrc; \
 		echo 'eval "$$(pyenv init -)"' >> ~/.bashrc; \
-		source ~/.bashrc; \
+		exec /bin/bash --login; \
 	else \
 		echo "Pyenv is already installed."; \
 	fi
+
+	# Reload the shell configuration
+	/bin/bash --login -c "source ~/.bashrc && echo 'Pyenv is installed and configured.'"
 
 	# Check if Python 3.11.7 is installed, and install it if not
 	if ! pyenv versions --bare | grep -q $(PYTHON_VERSION); then \
@@ -77,6 +83,13 @@ new_setup:
 .PHONY: ssh
 ssh:
 	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST)
+
+
+## Git clone the project in the remote server
+.PHONY: remote_git_clone
+remote_git_clone:
+	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "\
+	git clone https://github.com/recoverycompanion/reco.git"
 
 
 ## Start Jupyter Lab server (from remote server like EC2)

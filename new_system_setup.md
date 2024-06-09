@@ -14,7 +14,16 @@ This document will guide you through the process of setting up a new EC2 instanc
     - Security group: `jupyter-mk-sg`
     - Storage: 30GB (development/free tier), or 65GB (production) -- actual storage size TBD
 
-3. SSH into the server and run the following commands:
+3. Copy the public IP address of the instance and add it to `ec2_ip.txt` in the root of the repo. Also, add this IP to your local machine's `~/.ssh/config` file with the following format:
+
+    ```{bash}
+    Host jupyter-server
+        HostName <EC2 public IP here>
+        User ubuntu
+        IdentityFile ~/.ssh/jupyter-key.pem
+    ```
+
+4. SSH into the server and run the following commands:
 
     ```{bash}
     make remote_git_clone

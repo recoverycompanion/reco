@@ -96,16 +96,17 @@ remote_git_clone:
 	git clone https://github.com/recoverycompanion/reco.git"
 
 
-## Start Jupyter Lab server (from remote server like EC2)
+## Start Jupyter Lab server on remote server (run this on the remote server)
 .PHONY: jupyterlab_up
 jupyterlab_up:
 	# Start Jupyter Lab and log the token
-	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "\
-	tmux new-session -d -s jupyterlab 'jupyter lab --no-browser --port=8888' && \
-	sleep 5 && \
-	tmux capture-pane -t jupyterlab -p -S -1000 | grep -oP 'http://127.0.0.1:8888/\K.*' > jupyter_token.log"
+	tmux new-session -d -s jupyterlab 'jupyter lab --no-browser --port=8888'"
+	sleep 8
+	tmux capture-pane -t jupyterlab -p -S -1000 | tr -d '\n' | grep -oP -m 1 'http://127.0.0.1:8888/lab\?token=\K[a-zA-Z0-9_-]+' | head -n 1 > jupyter_token.log"
 
-	# Fetch the token file from the remote server
+## Fetch the token file from the remote server
+.PHONY: jupyterlab_fetch_token
+jupyterlab_fetch_token:
 	scp -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST):jupyter_token.log ./jupyter_token.log
 
 
@@ -118,15 +119,12 @@ jupyterlab_connect:
 	# Open browser with the token
 	TOKEN=$$(cat jupyter_token.log) && open "http://localhost:9999/?token=$$TOKEN"
 
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
-# .PHONY: data
-# data: install
-# 	$(PYTHON_INTERPRETER) reco_analysis/data/make_dataset.py
-
+## Stop Jupyter Lab server on remote server (run this on local machine)
+.PHONY: jupyterlab_down
+jupyterlab_down:
+	# Kill the specific tmux session
+	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "\
+	tmux kill-session -t jupyterlab"
 
 #################################################################################
 # Self Documenting Commands                                                     #

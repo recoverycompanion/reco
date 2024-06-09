@@ -100,9 +100,9 @@ remote_git_clone:
 .PHONY: jupyterlab_up
 jupyterlab_up:
 	# Start Jupyter Lab and log the token
-	tmux new-session -d -s jupyterlab 'jupyter lab --no-browser --port=8888'"
+	tmux new-session -d -s jupyterlab 'jupyter lab --no-browser --port=8888'
 	sleep 8
-	tmux capture-pane -t jupyterlab -p -S -1000 | tr -d '\n' | grep -oP -m 1 'http://127.0.0.1:8888/lab\?token=\K[a-zA-Z0-9_-]+' | head -n 1 > jupyter_token.log"
+	tmux capture-pane -t jupyterlab -p -S -1000 | tr -d '\n' | grep -oP -m 1 'http://127.0.0.1:8888/lab\?token=\K[a-zA-Z0-9_-]+' | head -n 1 > jupyter_token.log
 
 ## Fetch the token file from the remote server
 .PHONY: jupyterlab_fetch_token
@@ -122,9 +122,7 @@ jupyterlab_connect:
 ## Stop Jupyter Lab server on remote server (run this on local machine)
 .PHONY: jupyterlab_down
 jupyterlab_down:
-	# Kill the specific tmux session
-	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "\
-	tmux kill-session -t jupyterlab"
+	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "tmux kill-session -t jupyterlab"
 
 #################################################################################
 # Self Documenting Commands                                                     #

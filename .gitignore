@@ -165,3 +165,7 @@ cython_debug/
 
 # Mac DS Store
 .DS_Store
+
+# Custom
+jupyter_token.log
+ec2_ip.txt

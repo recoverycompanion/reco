@@ -96,7 +96,11 @@ remote_git_clone:
 	git clone https://github.com/recoverycompanion/reco.git"
 
 
-## Start Jupyter Lab server on remote server (run this on the remote server)
+#################################################################################
+# Jupyter Lab Commands - Run these in order									    #
+#################################################################################
+
+## Start Jupyter Lab server on remote server (run this on the REMOTE server)
 .PHONY: jupyterlab_up
 jupyterlab_up:
 	# Start Jupyter Lab and log the token
@@ -104,13 +108,13 @@ jupyterlab_up:
 	sleep 8
 	tmux capture-pane -t jupyterlab -p -S -1000 | tr -d '\n' | grep -oP -m 1 'http://127.0.0.1:8888/lab\?token=\K[a-zA-Z0-9_-]+' | head -n 1 > jupyter_token.log
 
-## Fetch the token file from the remote server
+## Fetch the token file from the remote server (run this on the LOCAL machine)
 .PHONY: jupyterlab_fetch_token
 jupyterlab_fetch_token:
-	scp -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST):jupyter_token.log ./jupyter_token.log
+	scp -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST):~/reco/jupyter_token.log ./jupyter_token.log
 
 
-## Connect to Jupyter Lab server (from local machine)
+## Connect to Jupyter Lab server (from LOCAL machine)
 .PHONY: jupyterlab_connect
 jupyterlab_connect:
 	# Port forward
@@ -119,10 +123,10 @@ jupyterlab_connect:
 	# Open browser with the token
 	TOKEN=$$(cat jupyter_token.log) && open "http://localhost:9999/?token=$$TOKEN"
 
-## Stop Jupyter Lab server on remote server (run this on local machine)
+## Stop Jupyter Lab server on remote server (run this on REMOTE machine)
 .PHONY: jupyterlab_down
 jupyterlab_down:
-	ssh -i ~/.ssh/$(PEM_FILE) $(SERVER_USER)@$(HOST) "tmux kill-session -t jupyterlab"
+	tmux kill-session -t jupyterlab
 
 #################################################################################
 # Self Documenting Commands                                                     #

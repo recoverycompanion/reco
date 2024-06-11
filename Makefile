@@ -79,9 +79,6 @@ new_setup:
 		pip install poetry==$(POETRY_VERSION); \
 	fi
 
-	# Install jupyterlab
-	pip install jupyterlab
-
 
 ## SSH into remote server
 .PHONY: ssh

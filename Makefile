@@ -104,7 +104,7 @@ remote_git_clone:
 .PHONY: jupyterlab_up
 jupyterlab_up:
 	# Start Jupyter Lab and log the token
-	tmux new-session -d -s jupyterlab 'jupyter lab --no-browser --port=8888'
+	cd reco_analysis && tmux new-session -d -s jupyterlab 'poetry run jupyter lab --no-browser --port=8888'
 	sleep 8
 	tmux capture-pane -t jupyterlab -p -S -1000 | tr -d '\n' | grep -oP -m 1 'http://127.0.0.1:8888/lab\?token=\K[a-zA-Z0-9_-]+' | head -n 1 > jupyter_token.log
 

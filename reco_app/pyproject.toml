@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "reco-app"
+version = "0.1.0"
+description = "Frontend and backend app for RECO: Recovery Companion, a Conversational AI for post-discharge heart failure patients"
+authors = [
+  "Mike Khor <khorenghoe@gmail.com>",
+  "Annelise Friar <anniefriar@berkeley.edu>",
+  "Farid Gholitabar <farid.gholitabar@berkeley.edu>",
+  "Gary Kong <garykong@berkeley.edu>"
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.7"
+openai = "^1.34.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

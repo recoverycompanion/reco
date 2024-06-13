@@ -2,7 +2,7 @@
 
 ## Milestone 1: Proof of Concept POC (green)
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]:::green
     CAI[Conversational AI Core GPT-3.5<br>Processes user input into natural language response]:::green
@@ -43,7 +43,7 @@ graph TD
 
 ## Milestone 2: Basic System Integration (blue)
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]:::green
     DM[Dialogue Manager<br>Manages user session, state, and response coordination]:::green
@@ -90,7 +90,7 @@ Enhance the system by introducing more sophisticated state management and prompt
 
 ## Milestone 3: Advanced Features Integration (red)
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]:::green
     DM[Dialogue Manager<br>Manages user session, state, and response coordination]:::green
@@ -143,7 +143,7 @@ Integrate advanced features like Retrieval-Augmented Generation to pull in relev
 
 ## Milestone 4: Full System Integration with LangChain Agent (purple)
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]:::green
     LCA[Dialogue Manager/LangChain Agent<br>Coordinates all components and data flow]:::purple
@@ -196,7 +196,7 @@ Comprehensive testing and optimization results.
 
 ## Older charts, ignore
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]
     DM[Dialogue Manager]
@@ -224,7 +224,7 @@ graph TD
     class UI,DM,CM,PE,RAG,CAI,DB,SQL module;
 ```
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]
     LCA[LangChain Agent]
@@ -259,7 +259,7 @@ graph TD
 
 Dead simple version
 
-```{mermaid}
+```mermaid
 graph TD
     UI[User Interface]
     CAI[Conversational AI Core GPT-3.5]

@@ -166,3 +166,4 @@ cython_debug/
 # Mac DS Store
 .DS_Store
 reco_analysis/.DS_Store
+reco_analysis/.env 2

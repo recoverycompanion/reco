@@ -167,3 +167,7 @@ cython_debug/
 .DS_Store
 reco_analysis/.DS_Store
 reco_analysis/.env 2
+
+# Custom
+jupyter_token.log
+ec2_ip.txt

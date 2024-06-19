@@ -21,11 +21,7 @@ logger = logging.getLogger(__name__)
 parent_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 dotenv.load_dotenv(f"{parent_dir}/.env", override=True)
 
-# Set environment variables for LangChain
-os.environ["LANGCHAIN_TRACING_V2"] = os.getenv("LANGCHAIN_TRACING_V2")
-os.environ["LANGCHAIN_ENDPOINT"] = os.getenv("LANGCHAIN_ENDPOINT")
-os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
-os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT")
+# Required environment variables for LangChain: LANGCHAIN_TRACING_V2, LANGCHAIN_ENDPOINT, LANGCHAIN_API_KEY, LANGCHAIN_PROJECT
 
 
 class UserInterface:

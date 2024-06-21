@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
+import random
 import os
+import json
+
+### READ IN MIMIC DATA
 
 new_directory = r"../data/raw/mimic/"  # Update the relative path accordingly
 os.chdir(new_directory)
@@ -11,53 +15,166 @@ csv_file_name = list_dir[1]
 
 df = pd.read_csv(csv_file_name)
 
-null_report = {}
-for column in df.columns:
-    null_count = df[column].isnull().sum()
-    null_report[column] = null_count
+### PROMPT GENERATION FUNCTION
 
-random_row_index = np.random.choice(df.index)
-random_row = df.iloc[random_row_index]
+def turn_row_into_prompt(row):
+    """This function takes in a row of the MIMIC dataframe, and returns a patient prompt"""
 
-### MIMIC DATA
+    ### MIMIC DATA
 
-gender = random_row['gender']
-race = random_row['race']
-age = random_row['age']
+    gender = row['gender']
+    race = row['race']
+    age = row['age']
 
-if pd.isna(random_row['marital_status']):
-    marital_status = "Prefer not to say"
-else:
-    marital_status = random_row['marital_status']
+    if pd.isna(row['marital_status']):
+        marital_status = "Prefer not to say"
+    else:
+        marital_status = row['marital_status']
 
-icd_title = random_row['icd_title']
-chiefcomplaint = random_row['chiefcomplaint']
-vitals_temperature = random_row['vitals_temperature']
-vitals_heartrate = int(random_row['vitals_heartrate'])
-vitals_resprate = int(random_row['vitals_resprate'])
-vitals_o2sat = random_row['vitals_o2sat']
-vitals_sbp = int(random_row['vitals_sbp'])
-vitals_dbp = int(random_row['vitals_dbp'])
-vitals_pain = int(random_row['vitals_pain'])
-vitals_rhythm = random_row['vitals_rhythm']
-hosp_discharge_location = random_row['hosp_discharge_location']
-all_meds = random_row['all_meds']
+    chiefcomplaint = row['chiefcomplaint']
+    vitals_temperature = row['vitals_temperature']
+    vitals_heartrate = int(row['vitals_heartrate'])
+    vitals_resprate = int(row['vitals_resprate'])
+    vitals_o2sat = row['vitals_o2sat']
+    vitals_sbp = int(row['vitals_sbp'])
+    vitals_dbp = int(row['vitals_dbp'])
+    vitals_pain = int(row['vitals_pain'])
+    all_meds = row['all_meds']
 
-### PERSONALITY
+    ### PERSONALITY
 
-patient_feelings = ['Normal', 'Anxious about your health', 'Grateful for your care team', 'Confused about your care plan', 'Somewhat hopeless about your condition', 'A little annoyed with the questions']
+    patient_feelings = ['Normal', 'Anxious about your health', 'Grateful for your care team', 'Confused about your care plan', 'Somewhat hopeless about your condition', 'A little annoyed with the questions']
 
-random_number = np.random.choice(20)
-if random_number < 15:
-    num = 0
-else:
-    num = random_number - 14
+    random_number = np.random.choice(20)
+    if random_number < 15:
+        num = 0
+    else:
+        num = random_number - 14
 
-primary_patient_feeling = patient_feelings[num]
+    primary_patient_feeling = patient_feelings[num]
 
-patient_prompt = f"You are a patient who has been discharged after a hospital stay for heart failure. You are reporting your symptoms for a routine check in with your doctor. When the doctor prompts 'Hi there' continue the roleplay. Provide realistic, concise responses that would occur during an in-person clinical visit; adlib your personal details as needed to keep the conversation realistic. Responses should not exceed two sentences. Feel free to include some 'um...' and 'ahs' for moments of thought. Do not relay all information provided intiially. See profile below for information.\n\nGender: {gender}\nAge: {age}\nMarital status: {marital_status}\nCurrent symptoms: {chiefcomplaint}. Note that if your current symptoms include 'dyspnea' report it colloquially as 'shortness of breath' or 'hard to breathe'\nCurrent emotional state: {primary_patient_feeling}. Note that your disposition can improved based on a positive interaction with your doctor.\n\n Current medications: {all_meds}. Note that you should report the meds only a few at a time before beginning a new sentence. Don't omit any meds in your response.\n\nWhen asked specifically about your vital signs, you may respond with the following information:\nTemperature: {vitals_temperature}\nHeart rate: {vitals_heartrate}. Note that the doctor may ask you this by asking you to count the number of beats for an interval of time.\nRespiratory rate: {vitals_resprate}. Note that the doctor may ask you this by asking you to count the number of breaths you take per minute.\nO2 saturation: {vitals_o2sat}. Note that the doctor may ask you this by asking you to get a reading from your pulse oximeter.\nBlood pressure: {vitals_sbp}/{vitals_dbp}\nPain: {vitals_pain}. Note that the doctor may ask you this by asking you to report your level of pain on a scale from 1 to 10."
+    ### NAME
 
-print(patient_prompt)
+    names_directory = r"../names/"
+    os.chdir(names_directory)
+
+    # Step 1: Read the CSV file into a DataFrame
+    ln_df = pd.read_csv('top_100_last_names_by_value.csv')
+
+    if gender == "Male":
+        fn_file_name = "Male_Names.csv"
+    elif gender == "Female":
+        fn_file_name = "Female_Names.csv"
+
+    fn_df = pd.read_csv(fn_file_name)
+
+    # Step 2: Determine files and columns to use
+    if race == "White":
+        ln_col = 'whi'
+        fn_col = 'pctwhite'
+    elif race == "Black/African American":
+        ln_col = 'bla'
+        fn_col = 'pctblack'
+    elif race == "Hispanic/Latino":
+        ln_col = 'his'
+        fn_col = 'pcthispanic'
+    elif race == "Asian":
+        ln_col = 'asi'
+        fn_col = 'pctaian'
+    elif race == "Native/Indigenous":
+        ln_col = 'oth'
+        fn_col = 'pctaian'
+    else:
+        ln_col = 'oth'
+        fn_col = 'pct2prace'
+
+    # Step 3: LN: Extract 'name' and 'whi' columns
+    last_names = ln_df['name'].tolist()
+    ln_probabilities = ln_df[ln_col].tolist()
+
+    # Step 4: LN: Normalize probabilities (ensure they sum to 1)
+    total_ln_probability = sum(ln_probabilities)
+    normalized_ln_probabilities = [p / total_ln_probability for p in ln_probabilities]
+
+    # Step 5: LN: Choose a name randomly based on the probabilities in the 'whi' column
+    chosen_last_name = random.choices(last_names, weights=normalized_ln_probabilities, k=1)[0]
+
+    ###
+
+    # Step 6: LN: Extract 'name' and 'whi' columns
+    first_names = fn_df['firstname'].tolist()
+    fn_probabilities = fn_df[fn_col].tolist()
+
+    # Step 7: LN: Normalize probabilities (ensure they sum to 1)
+    total_fn_probability = sum(fn_probabilities)
+    normalized_fn_probabilities = [p / total_fn_probability for p in fn_probabilities]
+
+    # Step 8: LN: Choose a name randomly based on the probabilities in the 'whi' column
+    chosen_first_name = random.choices(first_names, weights=normalized_fn_probabilities, k=1)[0]
+
+    chosen_name = chosen_first_name + " " + chosen_last_name
+
+    chosen_name = chosen_name.title()
+
+    ### PROMPT
+
+    patient_prompt = f"""
+    You are {chosen_name}, a patient who has been discharged after a hospital stay for heart failure. You are reporting your symptoms for a routine check-in with your doctor. Provide realistic, concise responses that would occur during an in-person clinical visit, ad-libbing personal details as needed to maintain realism, and keep responses to no more than two sentences. Include some filler words like 'um...' and 'ah...' to simulate natural conversation. Do not relay all information at once. 
+
+    Use the profile below during the conversation:
+    <input>
+    Gender: {gender}
+    Age: {age}
+    Race: {race}
+    Marital status: {marital_status}
+    Current symptoms: {chiefcomplaint} (report your symptoms in plain language, avoid medical terminology)
+    Current emotional state: {primary_patient_feeling} (can improve based on interaction with the doctor)
+    Current medications to report: {all_meds} (only mention a few at a time)
+    Vital signs information:
+    - Temperature: {vitals_temperature}
+    - Heart rate: {vitals_heartrate} (the doctor may ask you to count the number of beats for an interval of time)
+    - Respiratory rate: {vitals_resprate} (the doctor may ask you to count the number of breaths you take per minute)
+    - O2 saturation: {vitals_o2sat} (the doctor may ask you to get a reading from your pulse oximeter)
+    - Blood pressure: {vitals_sbp}/{vitals_dbp}
+    - Pain: {vitals_pain} (the doctor may ask you to report your level of pain on a scale from 0 to 10)
+
+    """
+
+    return patient_prompt
+
+### GENERATE PATIENTS BASED ON REPRESENTATIVE DEMOGRAPHICS
+
+demographics = {'White': 8, 'Black/African American': 4, 'Hispanic/Latino': 5, 'Other/Unknown': 1, 'Asian': 1, 'Native/Indigenous': 1}
+
+patients = {}
+
+for pt_race, count in demographics.items():
+    fresh_df = df.copy(deep=True)
+    interim_df = fresh_df[fresh_df['race'] == pt_race]
+    interim_df = interim_df.reset_index()
+
+    for i in range(count):
+        patient = {}
+        random_row_index = np.random.choice(interim_df.index)
+        random_row = interim_df.iloc[random_row_index]
+        prompt = turn_row_into_prompt(random_row)
+
+        patient['id'] = int(random_row['subject_id'])
+        patient['name'] = str(prompt[13:prompt.find(',')])
+        patient['prompt'] = str(prompt)
+
+        patients[str(patient['id'])] = patient
+
+### WRITE TO JSON FILE
+
+file_path = '../../patients/patients_1.0.json'
+
+with open(file_path, 'w') as json_file:
+    json.dump(patients, json_file)
+
+
+
+### REFERENCES
 
 '''
 Example from synthetic patients paper:

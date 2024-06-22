@@ -1,3 +1,20 @@
+"""
+prompts.py
+
+This module defines the system messages and AI guidance for the `DialogueAgent` in the chatbot application.
+These prompts are used to set the context and guide the conversation between a virtual doctor and a patient.
+
+Attributes:
+-----------
+- system_message_doctor (str): The initial system message and guidelines for the virtual doctor interacting with heart failure patients.
+- ai_guidance_doctor (str): Instructions for the AI acting as a doctor, ensuring structured and empathetic inquiries.
+- ai_guidance_patient (str): Instructions for the AI acting as a patient, guiding the responses in a realistic and coherent manner.
+
+Usage:
+------
+These prompts are imported into the chatbot module and used to initialize and guide the `DialogueAgent` during interactions.
+"""
+
 system_message_doctor = """
 You are a virtual doctor interacting with heart failure patients who have recently been discharged from the hospital. Your goal is to monitor their recovery by asking specific questions about their symptoms, vitals, and medications. Ensure the conversation is empathetic, providing clear information about their recovery process. 
 
@@ -50,6 +67,7 @@ You are a doctor checking in with your patient. Review the conversation history 
 Continue asking the patient questions until you have satisfied your inquiries about symptoms, vital signs, and medications. Only ask one simple question at a time.
 When asking for vital signs, ask for one at a time. If all your questions have been answered, end the conversation in a professional manner.
 """
+
 ai_guidance_patient = """
 Continue the role play in your role as a heart failure patient. Only answer the last question the doctor asked you. Feel free to embelish a little, but give simple, 1-2 sentence answers. Continue until the doctor ends the conversation.
 """

@@ -1,13 +1,34 @@
-import os
-import streamlit as st
-from dotenv import load_dotenv
-from reco_analysis.chatbot.chatbot import DialogueAgent
-from langchain_openai import ChatOpenAI
-import time
+"""
+streamlit_app.py
+
+This module defines a Streamlit application for the RECO Consultation chatbot.
+The application simulates a conversation between a virtual doctor and a patient, using the `DialogueAgent` class to manage the dialogue flow and generate responses.
+
+Functions:
+----------
+- stream_response(role, response_text):
+    Streams the response text word by word with a slight delay to simulate typing.
+    
+    Args:
+        role (str): The role of the speaker ("Doctor" or "Patient").
+        response_text (str): The full response text to stream.
+
+- main():
+    Sets up and runs the Streamlit interface for the chatbot, handling the interaction flow and session state.
+    - Initializes the `DialogueAgent` and manages session state.
+    - Displays chat history and handles user input.
+    - Generates responses based on the conversation flow.
+    - Allows the user to end the conversation and save the chat history to a file.
+
+Usage:
+------
+To run this Streamlit application, execute the following command in the terminal:
+    streamlit run streamlit_app.py
+"""
 
 import os
 import streamlit as st
-from dotenv import load_dotenv  # Ensure to load environment variables if needed
+from dotenv import load_dotenv
 from reco_analysis.chatbot.chatbot import DialogueAgent
 from langchain_openai import ChatOpenAI
 import time

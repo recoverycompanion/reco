@@ -1,11 +1,48 @@
+#!/usr/bin/env python
+"""
+test_chatbot.py
+
+This module contains unit tests for the `DialogueAgent` class implemented in `chatbot.py`.
+It uses the `unittest` framework to verify the correctness of various functionalities such as initialization, message handling, and session management of the `DialogueAgent`.
+
+Classes:
+--------
+- DialogueAgentTests:
+    Tests the core functionalities of the `DialogueAgent` class, including initialization, message handling, and response generation.
+
+- TestSessionManagement:
+    Tests session management capabilities of the `DialogueAgent`, specifically how it handles custom and new session IDs.
+
+Functions:
+----------
+- setUp(): Sets up a new `DialogueAgent` instance and clears the session store before each test to ensure a fresh state.
+
+Mocking:
+--------
+- A mock of the `ChatOpenAI` model (`mock_model`) is used to simulate the responses and isolate the tests from external dependencies.
+
+Test Methods:
+-------------
+- test_initialization(): Verifies that the `DialogueAgent` initializes correctly with the given parameters.
+- test_reset(): Checks that the `reset()` method clears the conversation history.
+- test_generate_response(): Ensures that the `generate_response()` method generates an appropriate response and adds it to the conversation history.
+- test_send(): Validates that the `send()` method correctly adds the AI's message to the conversation history.
+- test_receive(): Confirms that the `receive()` method properly adds the human's message to the conversation history.
+- test_get_history(): Tests that the `get_history()` method retrieves the full conversation history formatted correctly.
+- test_custom_session_id(): Tests that a custom session ID resumes the conversation with the correct history.
+- test_new_session_id(): Verifies that a new session ID starts with an empty conversation history.
+
+Example Usage:
+--------------
+To run the tests, use the following command in the terminal:
+    python -m unittest test_chatbot.py
+"""
+import uuid
 import unittest
-from typing import List, Tuple, Dict, Any
 from unittest.mock import MagicMock
-from langchain.schema import HumanMessage, AIMessage
+from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
 from reco_analysis.chatbot.chatbot import DialogueAgent
-from reco_analysis.chatbot.session_management import get_session_history
-import uuid
 
 # Mock the ChatOpenAI model
 mock_model = MagicMock(spec=ChatOpenAI)

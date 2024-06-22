@@ -1,13 +1,65 @@
-# Note: This code snippet needs to be copy pasted from notebooks/chatbot.ipynb to reco_analysis/reco_analysis/chatbot.py
+"""
+chatbot.py
+
+This module implements the `DialogueAgent` class, a conversational agent for simulating dialogues between a doctor and a patient.
+It leverages the `langchain` framework and the `ChatOpenAI` model to generate responses based on conversation history.
+
+Classes:
+    DialogueAgent: Manages the conversation, including initializing with a specific role, handling message flow,
+                   generating responses, and storing conversation history.
+
+Variables:
+    session_store (dict): An in-memory dictionary for storing chat histories to enable stateful conversations.
+    model (ChatOpenAI): The language model instance used for generating responses.
+
+Usage:
+    agent = DialogueAgent(role="Doctor")
+    agent.receive("I've been feeling tired.")
+    response = agent.generate_response()
+    print(response)
+
+Components:
+------------
+- DialogueAgent:
+    Manages the conversation flow, including:
+    - Initializing with a specific role (Doctor or Patient) and session context.
+    - Handling the flow of messages.
+    - Generating and responding to inputs using the `ChatOpenAI` model.
+    - Storing conversation history for continuity.
+
+- Session Store:
+    A temporary in-memory dictionary (`session_store`) for storing chat histories, enabling stateful conversations.
+
+- Prompt Templates:
+    Predefined prompts set the context and guide the conversation, using templates that include system messages and placeholders for user input and history.
+
+    Note: System messages and AI guidance should be defined in `prompts.py`, which includes templates for different roles and contexts.
+
+Example:
+---------
+    agent = DialogueAgent(role="Doctor")
+    agent.receive("I've been feeling tired.")
+    response = agent.generate_response()
+    print(response)
+
+Notes:
+-------
+- Ensure environment variables, especially API keys, are set up using a `.env` file.
+- Define system messages and AI guidance in `prompts.py`.
+- This code is typically copied from `notebooks/chatbot.ipynb` to `reco_analysis/reco_analysis/chatbot.py`.
+
+"""
+
+import uuid
 from dotenv import load_dotenv
 from typing import Optional, List
-import uuid
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from langchain_core.prompts import HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
-from reco_analysis.chatbot.session_management import get_session_history
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain.schema import BaseChatMessageHistory
 from reco_analysis.chatbot.prompts import system_message_doctor, ai_guidance_doctor, ai_guidance_patient
 
 # Load environment variables
@@ -15,6 +67,21 @@ load_dotenv("../.env")
 
 # Define the session store (using a dictionary to store chat histories in memory for now)
 session_store = {}
+
+def get_session_history(session_id: str, session_store: dict) -> BaseChatMessageHistory:
+    """
+    Store the chat history for a given session ID.
+    
+    Args:
+        session_id (str): The session ID to retrieve the chat history for.
+        session_store (dict): The dictionary to store the chat histories.
+    
+    Returns:
+        BaseChatMessageHistory: The chat history for the session.
+    """
+    if session_id not in session_store:
+        session_store[session_id] = ChatMessageHistory()
+    return session_store[session_id]
 
 model = ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo')
 

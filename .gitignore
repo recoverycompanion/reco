@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# .DS_store
+.DS_Store
+
 # C extensions
 *.so
 
@@ -165,6 +168,8 @@ cython_debug/
 
 # Mac DS Store
 .DS_Store
+reco_analysis/.DS_Store
+reco_analysis/.env 2
 
 # Custom
 jupyter_token.log

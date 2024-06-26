@@ -46,6 +46,7 @@ langchain-openai = "^0.1.8"
 langchain = "^0.2.3"
 langchain-community = "^0.2.4"
 streamlit = "^1.35.0"
+streamlit-authenticator = "^0.3.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"

@@ -105,6 +105,30 @@ alembic_current:
 	cd reco_analysis/data_model && poetry run alembic current
 
 
+## Create local dev postgres database from scratch (MacOS)
+.PHONY: create_dev_db
+create_dev_db:
+	# ensure that postgres is running
+	brew services start postgresql
+	# first, drop the database if it exists
+	psql -c "DROP DATABASE IF EXISTS reco" postgres
+	# create the database
+	createdb reco
+	# create the tables using alembic_upgrade
+	make alembic_upgrade
+	# add fake data
+	poetry run python reco_analysis/data_model/init_test_data.py
+
+## Create prod postgres database from scratch (Linux)
+.PHONY: create_prod_db
+create_prod_db:
+	# first, drop the database if it exists
+	psql -c "DROP DATABASE IF EXISTS reco" postgres
+	# create the database
+	createdb reco
+	# create the tables using alembic_upgrade
+	make alembic_upgrade
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################

@@ -28,7 +28,7 @@ DB = os.getenv("POSTGRES_DB_NAME") or "reco"
 DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 
-def get_engine(db_url: str) -> "Engine":
+def get_engine(db_url: str = DB_URL) -> "Engine":
     return create_engine(db_url)
 
 

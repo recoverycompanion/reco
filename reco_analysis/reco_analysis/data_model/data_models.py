@@ -17,7 +17,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-load_dotenv("../.env")
+env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
+load_dotenv(env_file_path)
 
 USER = "reco_admin"
 PASSWORD = os.getenv("POSTGRES_DB_PASSWORD") or "averysecurepasswordthatyouwillneverguess"
@@ -118,3 +119,7 @@ class Message(Base):
 
     def __repr__(self):
         return f"Message(session_id='{self.session_id}', message='{self.message}', timestamp='{self.timestamp}')"
+
+
+def create_tables(engine: Engine) -> None:
+    Base.metadata.create_all(engine)

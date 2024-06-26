@@ -84,6 +84,26 @@ aws_configure:
 		aws configure --profile $(PROFILE); \
 	fi
 
+## Alembic - Create a new migration
+.PHONY: alembic_migrate
+alembic_migrate:
+	cd reco_analysis/data_model && poetry run alembic revision --autogenerate -m "$(message)"
+
+## Alembic - Upgrade to the latest migration
+.PHONY: alembic_upgrade
+alembic_upgrade:
+	cd reco_analysis/data_model && poetry run alembic upgrade head
+
+## Alembic - Downgrade to the previous migration
+.PHONY: alembic_downgrade
+alembic_downgrade:
+	cd reco_analysis/data_model && poetry run alembic downgrade -1
+
+## Alembic - Show the current revision
+.PHONY: alembic_current
+alembic_current:
+	cd reco_analysis/data_model && poetry run alembic current
+
 
 #################################################################################
 # PROJECT RULES                                                                 #

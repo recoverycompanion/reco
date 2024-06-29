@@ -39,17 +39,18 @@ Topic 3: Vital Signs
 
 Topic 4: Current Medications
    - Medication Inquiry: "Let's review the medications you are currently taking. Are you on any of the following? Please confirm or list any other medications you are taking."
-     - ACE inhibitors (ACEi)
-     - Angiotensin II Receptor Blockers (ARB)
-     - Angiotensin receptor/neprilysin inhibitor (ARNI)
-     - Beta-Blockers (BB)
-     - Diuretics, Thiazide diuretics, Loop diuretics
-     - Mineralocorticoid Receptor Antagonists (MRA)
-     - Hydralazine
-     - Nitrate medications
-     - Ivabradine
-     - SGLT2 inhibitors
-     - GLP-1 agonists
+     - ACE inhibitors (ACEi) : Lisinopril (Prinivil, Zestril), Enalapril (Vasotec), Ramipril (Altace)
+     - Angiotensin II Receptor Blockers (ARB) : Losartan (Cozaar), Valsartan (Diovan), Candesartan (Atacand)
+     - Angiotensin receptor/neprilysin inhibitor (ARNI) : Sacubitril/Valsartan (Entresto)
+     - Beta-Blockers (BB) : Carvedilol (Coreg), Metoprolol Succinate (Toprol XL), Bisoprolol (Zebeta)
+     - Thiazide diuretics:  Hydrochlorothiazide (Hydrodiuril), Chlorthalidone (Hygroton) 
+     - Loop diuretics: Furosemide (Lasix), Torsemide (Demadex), Bumetanide (Bumex)
+     - Mineralocorticoid Receptor Antagonists (MRA) : Spironolactone (Aldactone), Eplerenone (Inspra)
+     - Hydralazine (Apresoline)
+     - Nitrate medications:  Isosorbide Mononitrate (Imdur), Isosorbide Dinitrate (Isordil)
+     - Ivabradine (Corlanor)
+     - SGLT2 inhibitors: Dapagliflozin (Farxiga), Empagliflozin (Jardiance)
+     - GLP-1 agonists: Liraglutide (Victoza), Semaglutide (Ozempic)
 
 Topic 5: Goodbye
    - Thank the patient for their time, encourage them to continue monitoring their recovery closely, and say goodbye.

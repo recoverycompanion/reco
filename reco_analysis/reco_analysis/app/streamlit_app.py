@@ -27,9 +27,7 @@ To run this Streamlit application, execute the following command in the terminal
 """
 
 import streamlit as st
-from dotenv import load_dotenv
 from reco_analysis.chatbot.chatbot import DialogueAgent
-from langchain_openai import ChatOpenAI
 import time
 from pathlib import Path
 import yaml
@@ -49,7 +47,6 @@ def load_credentials(file_path):
     with open(file_path, "r") as file:
         credentials = yaml.load(file, Loader=SafeLoader)
     return credentials
-
 
 def setup_authenticator():
     """
@@ -78,6 +75,18 @@ def setup_authenticator():
 
     return authenticator, name, authentication_status, patient_id
 
+def get_icon(role):
+    """
+    Get the icon for the speaker based on their role.
+
+    Args:
+        role (str): The role of the speaker ("Doctor" or "Patient").
+
+    Returns:
+        str: The icon for the speaker.
+    """
+    return "ai" if role == "Doctor" else "user"
+
 def stream_response(role, response_text):
     """
     Stream the response text word by word with a delay.
@@ -86,7 +95,7 @@ def stream_response(role, response_text):
         role (str): The role of the speaker ("Doctor" or "Patient").
         response_text (str): The full response text to stream.
     """
-    with st.chat_message(role):
+    with st.chat_message(role, avatar=get_icon(role)):
         response_placeholder = st.empty()
         full_response = ""
         for word in response_text.split():
@@ -103,7 +112,7 @@ def display_chat_history(agent):
     """
     for message in agent.get_history():
         role, content = message.split(": ", 1)  # Split role and message content
-        with st.chat_message(role):
+        with st.chat_message(role, avatar=get_icon(role)):
             st.markdown(content)
 
 def handle_user_input(agent):
@@ -117,7 +126,7 @@ def handle_user_input(agent):
         if st.session_state.turn == "Patient":
             # Add user message to the agent's memory
             agent.receive(prompt)
-            with st.chat_message("Patient"):
+            with st.chat_message("Patient", avatar=get_icon("Patient")):
                 st.markdown(prompt)
             st.session_state.turn = "Doctor"  # Next turn is for the doctor
 
@@ -130,6 +139,14 @@ def handle_user_input(agent):
     
 def main():
     
+    # Set the page title
+    st.set_page_config(page_title="RECO Consultation Tool", page_icon=":hearts:")
+
+    # Display the title and description
+    with st.sidebar:
+        st.title("RECO: Recovery Companion")
+        st.markdown("Welcome to the RECO Consultation Tool! I am here to help you with your recovery journey.")
+
     # Authenticate the user
     authenticator, name, authentication_status, patient_id = setup_authenticator() # To-do: Add patient ID as a parameter to the DialogueAgent class
 
@@ -160,10 +177,10 @@ def main():
         handle_user_input(agent)
 
         # Create a button to stop the conversation
-        if st.button("End Conversation", type="primary", key="end_conversation"):
+        if st.sidebar.button("End Conversation", type="primary", key="end_conversation"):
             st.write("Thank you for using the RECO Consultation tool. Goodbye!")
             
-            # Export the conversation history to a text file. Note this is a simple example which will need to be altered for future use.
+            # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
             with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
                 for message in agent.get_history():
                     file.write(message + "\n")

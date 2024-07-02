@@ -1,0 +1,21 @@
+Transcript Number,Patient Name,"Dyspnea (shortness of breath) at rest, while walking or climbing stairs?",Paroxysmal Nocturnal Dyspnea (PND) (sudden shortness of breath at night),Orthopnea (shortness of breath while lying flat),Ankle edema or general lower extremity swelling (swelling in ankles or legs),Nocturnal cough (coughing at night),Chest pain,Fatigue,Worsening mental status that is acute (sudden confusion or mental changes),Temperature (body temperature),Heart rate (pulse),Respiratory rate (number of breaths per minute),Oxygen saturation (oxygen level in the blood),Blood pressure (systolic and diastolic) (upper and lower blood pressure numbers),Weight (body weight),Did the doctor ask the patient what medications they are on?,Be sympathetic when the patient reports symptoms or pain.,"Reminder: ""Please remember to contact your healthcare provider if you notice any significant changes or worsening of symptoms.""",End the Conversation: Express care and encourage the patient to reach out if they need further assistance.,Premature end to conversation?,Conversation flows naturally: no repetition,Patient uses plain language,Patient is consistent about their symptoms,Patient doesn’t invent information that contradicts the prompt (confabulations),Patient allows the doctor to ask questions and doesn’t take over direction of the conversation (offering information before it’s asked for)
+19557627,1,1,1,0,1,0,0,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0
+19516114,1,1,1,0,1,0,0,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1
+18136989,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1
+17707918,1,1,1,0,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1
+17566649,1,1,1,0,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0
+15345003,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+15338322,1,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+14807966,1,1,1,0,0,0,0,1,0,0,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+14540393,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1
+14185111,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+13912736,1,1,1,0,0,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0
+13727871,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1
+13727153,1,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+13166275,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1
+12807868,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1
+12390274,1,1,1,0,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0
+12305811,1,1,1,0,0,1,0,0,1,0,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0
+11242742,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+11080025,1,1,1,0,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1
+10339317,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1

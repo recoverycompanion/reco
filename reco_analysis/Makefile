@@ -84,6 +84,50 @@ aws_configure:
 		aws configure --profile $(PROFILE); \
 	fi
 
+## Alembic - Create a new migration
+.PHONY: alembic_migrate
+alembic_migrate:
+	cd reco_analysis/data_model && poetry run alembic revision --autogenerate -m "$(message)"
+
+## Alembic - Upgrade to the latest migration
+.PHONY: alembic_upgrade
+alembic_upgrade:
+	cd reco_analysis/data_model && poetry run alembic upgrade head
+
+## Alembic - Downgrade to the previous migration
+.PHONY: alembic_downgrade
+alembic_downgrade:
+	cd reco_analysis/data_model && poetry run alembic downgrade -1
+
+## Alembic - Show the current revision
+.PHONY: alembic_current
+alembic_current:
+	cd reco_analysis/data_model && poetry run alembic current
+
+
+## Create local dev postgres database from scratch (MacOS)
+.PHONY: create_dev_db
+create_dev_db:
+	# ensure that postgres is running
+	brew services start postgresql
+	# first, drop the database if it exists
+	psql -c "DROP DATABASE IF EXISTS reco" postgres
+	# create the database
+	createdb reco
+	# create the tables using alembic_upgrade
+	make alembic_upgrade
+	# add fake data
+	poetry run python reco_analysis/data_model/init_test_data.py
+
+## Create prod postgres database from scratch (Linux)
+.PHONY: create_prod_db
+create_prod_db:
+	# first, drop the database if it exists
+	psql -c "DROP DATABASE IF EXISTS reco" postgres
+	# create the database
+	createdb reco
+	# create the tables using alembic_upgrade
+	make alembic_upgrade
 
 #################################################################################
 # PROJECT RULES                                                                 #

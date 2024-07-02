@@ -90,6 +90,7 @@ class DialogueAgent:
                  role: Optional[str] = "Doctor",
                  system_message: Optional[str] = system_message_doctor,
                  model: Optional[ChatOpenAI] = model,
+                 patient_id: Optional[str] = None,
                  session_id: Optional[str] = None) -> None:
         """
         Initialize the DialogueAgent with a name, system message, guidance after each run of the chat,
@@ -99,10 +100,14 @@ class DialogueAgent:
             role (str): The role of the agent (either 'Patient' or 'Doctor').
             system_message (str): The initial system message to set the context.
             model (ChatOpenAI): The language model to use for generating responses.
+            patient_id (str, optional): The unique patient ID for the conversation. Defaults to None.
             session_id (str, optional): The unique session ID for the conversation. Defaults to None. If None, a new session ID will be generated. If a session ID is provided, the conversation history will be loaded from the session store (if available)
         """
         self.system_message = system_message
         self.model = model
+
+        # Set the patient ID
+        self.patient_id = patient_id
 
         # Set the role of the agent and the human
         role = role.capitalize()

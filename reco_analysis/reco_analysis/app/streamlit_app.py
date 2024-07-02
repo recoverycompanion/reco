@@ -141,14 +141,14 @@ def main():
     
     # Set the page title
     st.set_page_config(page_title="RECO Consultation Tool", page_icon=":hearts:")
-
+        
     # Display the title and description
     with st.sidebar:
         st.title("RECO: Recovery Companion")
         st.markdown("Welcome to the RECO Consultation Tool! I am here to help you with your recovery journey.")
 
     # Authenticate the user
-    authenticator, name, authentication_status, patient_id = setup_authenticator() # To-do: Add patient ID as a parameter to the DialogueAgent class
+    authenticator, name, authentication_status, patient_id = setup_authenticator()
 
     # Check if the user is authenticated
     if authentication_status == True:
@@ -157,7 +157,7 @@ def main():
 
         # Initialize session state for Streamlit
         if 'agent' not in st.session_state:
-            st.session_state.agent = DialogueAgent()
+            st.session_state.agent = DialogueAgent(patient_id = patient_id) # This will add patient_id as an attribute to the DialogueAgent class so that we can associate the patient_id with the conversation history\
             st.session_state.initial_response_shown = False
             st.session_state.turn = "Doctor"  # Start with the doctor's turn
         
@@ -184,7 +184,7 @@ def main():
             with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
                 for message in agent.get_history():
                     file.write(message + "\n")
-  
+     
     # Display a warning if the user is not authenticated
     elif authentication_status == False:
         st.error('Patient ID and/or Password is incorrect')

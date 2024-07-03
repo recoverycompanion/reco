@@ -71,7 +71,6 @@ from langchain_community.chat_message_histories import (
 from langchain_community.chat_message_histories.sql import DefaultMessageConverter
 from langchain_core.messages import BaseMessage, message_to_dict
 from langchain_core.prompts import HumanMessagePromptTemplate, MessagesPlaceholder
-from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
 from reco_analysis.chatbot.prompts import (
@@ -214,12 +213,6 @@ class DialogueAgent:
         # Define the LLM chain with the model and prompt
         self.chain = self.prompt | self.model | StrOutputParser()
 
-        # if use_postgres:
-        #     self.chain = RunnableWithMessageHistory(
-        #         self.chain,
-        #         get_session_history=get_session_history,
-        #     )
-
         # Prepare the AI instruction (this acts as guidance for the agent after each run of the chat)
         self.ai_instruct = ai_guidance_doctor if self.role == "Doctor" else ai_guidance_patient
 
@@ -242,13 +235,8 @@ class DialogueAgent:
             "human_input": self.ai_instruct,
         }
 
-        # config = {"configurable": {"session_id": str(self.session_id)}}
-
         # Run the chain to generate a response
-        response = self.chain.invoke(
-            input_data,
-            # config=config,
-        )
+        response = self.chain.invoke(input_data)
 
         # Save the AI's response to the memory
         self.send(response)

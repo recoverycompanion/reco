@@ -50,52 +50,116 @@ Notes:
 
 """
 
+import json
+import os
+import typing
 import uuid
+
 from dotenv import load_dotenv
-from typing import Optional, List
-from langchain_openai import ChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
-from langchain_core.prompts import HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain.prompts import ChatPromptTemplate
+from langchain.schema import (
+    AIMessage,
+    BaseChatMessageHistory,
+    HumanMessage,
+    SystemMessage,
+)
 from langchain.schema.output_parser import StrOutputParser
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.schema import BaseChatMessageHistory
-from reco_analysis.chatbot.prompts import system_message_doctor, ai_guidance_doctor, ai_guidance_patient
+from langchain_community.chat_message_histories import (
+    ChatMessageHistory,
+    SQLChatMessageHistory,
+)
+from langchain_community.chat_message_histories.sql import DefaultMessageConverter
+from langchain_core.messages import BaseMessage, message_to_dict
+from langchain_core.prompts import HumanMessagePromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
+
+from reco_analysis.chatbot.prompts import (
+    ai_guidance_doctor,
+    ai_guidance_patient,
+    system_message_doctor,
+)
+from reco_analysis.data_model import data_models
 
 # Load environment variables
 load_dotenv("../.env")
 
-# Define the session store (using a dictionary to store chat histories in memory for now)
-session_store = {}
+# if postgres variables are specified, set `use_postgres` to True
+use_postgres = False
+if all(
+    [
+        os.getenv(var)
+        for var in [
+            "POSTGRES_DB_USER",
+            "POSTGRES_DB_PASSWORD",
+            "POSTGRES_DB_HOST",
+            "POSTGRES_DB_PORT",
+            "POSTGRES_DB_NAME",
+        ]
+    ]
+):
+    use_postgres = True
 
-def get_session_history(session_id: str, session_store: dict) -> BaseChatMessageHistory:
+
+class CustomMessageConverter(DefaultMessageConverter):
+    def __init__(self):
+        self.model_class = data_models.Message
+
+    def to_sql_model(self, message: BaseMessage, session_id: str) -> data_models.Message:
+        return self.model_class(
+            session_id=session_id, message=json.dumps(message_to_dict(message))
+        )
+
+    def get_sql_model_class(self):
+        return data_models.Message
+
+
+# For local dev - define the session store (a dictionary to store chat histories in memory)
+SESSION_STORE: typing.Dict[str, BaseChatMessageHistory] = {}
+
+postgres_engine = data_models.get_engine()
+
+
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
     """
     Store the chat history for a given session ID.
-    
+
     Args:
         session_id (str): The session ID to retrieve the chat history for.
-        session_store (dict): The dictionary to store the chat histories.
-    
+
     Returns:
         BaseChatMessageHistory: The chat history for the session.
     """
-    if session_id not in session_store:
-        session_store[session_id] = ChatMessageHistory()
-    return session_store[session_id]
 
-model = ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo')
+    if use_postgres:
+        return SQLChatMessageHistory(
+            session_id=session_id,
+            connection=postgres_engine,
+            session_id_field_name="session_id",
+            custom_message_converter=CustomMessageConverter(),
+        )
+    else:
+        if session_id not in SESSION_STORE:
+            SESSION_STORE[session_id] = ChatMessageHistory()
+        return SESSION_STORE[session_id]
+
+
+model = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+
 
 class DialogueAgent:
-    def __init__(self,
-                 role: Optional[str] = "Doctor",
-                 system_message: Optional[str] = system_message_doctor,
-                 model: Optional[ChatOpenAI] = model,
-                 patient_id: Optional[str] = None,
-                 session_id: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        role: typing.Optional[str] = "Doctor",
+        system_message: typing.Optional[str] = system_message_doctor,
+        model: typing.Optional[ChatOpenAI] = model,
+        patient_id: typing.Optional[str] = None,
+        session_id: typing.Optional[str] = None,
+    ) -> None:
         """
         Initialize the DialogueAgent with a name, system message, guidance after each run of the chat,
         a language model, and a session ID.
-        
+
         Args:
             role (str): The role of the agent (either 'Patient' or 'Doctor').
             system_message (str): The initial system message to set the context.
@@ -120,19 +184,29 @@ class DialogueAgent:
         self.session_id = str(uuid.uuid4()) if session_id is None else session_id
 
         # Initialize chat message history to keep track of the entire conversation
-        self.memory = get_session_history(self.session_id, session_store)
-        
+        self.memory: BaseChatMessageHistory = get_session_history(self.session_id)
+
         # Define the prompt template with placeholders for the chat history and human input
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 SystemMessage(content=self.system_message),  # The persistent system prompt
-                MessagesPlaceholder(variable_name="chat_history"),  # Where the memory will be stored.
-                HumanMessagePromptTemplate.from_template("{human_input}"),  # Where the human input will be injected
+                MessagesPlaceholder(
+                    variable_name="chat_history"
+                ),  # Where the memory will be stored.
+                HumanMessagePromptTemplate.from_template(
+                    "{human_input}"
+                ),  # Where the human input will be injected
             ]
         )
-        
+
         # Define the LLM chain with the model and prompt
         self.chain = self.prompt | self.model | StrOutputParser()
+
+        if use_postgres:
+            self.chain = RunnableWithMessageHistory(
+                self.chain,
+                get_session_history=get_session_history,
+            )
 
         # Prepare the AI instruction (this acts as guidance for the agent after each run of the chat)
         self.ai_instruct = ai_guidance_doctor if self.role == "Doctor" else ai_guidance_patient
@@ -146,24 +220,26 @@ class DialogueAgent:
     def generate_response(self) -> str:
         """
         Generates a response based on the conversation history stored in memory.
-        
+
         Returns:
             str: The response generated by the language model.
         """
         # Prepare the input for the model
         input_data = {
             "chat_history": self.memory.messages,
-            "human_input": self.ai_instruct
+            "human_input": self.ai_instruct,
         }
 
+        config = {"configurable": {"session_id": self.session_id}}
+
         # Run the chain to generate a response
-        response = self.chain.invoke(input_data)
+        response = self.chain.invoke(input_data, config=config)
 
         # Save the AI's response to the memory
         self.send(response)
 
         return response
-    
+
     def send(self, message: str) -> None:
         """
         Adds a new message to the conversation history in memory for the AI role.
@@ -177,19 +253,19 @@ class DialogueAgent:
     def receive(self, message: str) -> None:
         """
         Adds a new message to the conversation history in memory for the human role.
-        
+
         Args:
             message (str): The content of the message.
         """
         # Save the user input to the conversation memory
         self.memory.add_message(HumanMessage(content=message, name=self.human_role))
-        
-    def get_history(self) -> List[str]:
+
+    def get_history(self) -> typing.List[str]:
         """
         Retrieves the full conversation history stored in memory.
-        
+
         Returns:
-            List[str]: The list of messages in the conversation history.
+            typing.List[str]: The list of messages in the conversation history.
         """
         formatted_history = []
         for msg in self.memory.messages:

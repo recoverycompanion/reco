@@ -8,7 +8,7 @@ Functions:
 ----------
 - stream_response(role, response_text):
     Streams the response text word by word with a slight delay to simulate typing.
-    
+
     Args:
         role (str): The role of the speaker ("Doctor" or "Patient").
         response_text (str): The full response text to stream.
@@ -26,21 +26,35 @@ To run this Streamlit application, execute the following command in the terminal
     streamlit run streamlit_app.py
 """
 
-import streamlit as st
-from reco_analysis.chatbot.chatbot import DialogueAgent
 import time
+import typing
 from pathlib import Path
+from typing import TypedDict
+
+import streamlit as st
+import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-import streamlit_authenticator as stauth
 
-def load_credentials(file_path):
+from reco_analysis.chatbot.chatbot import DialogueAgent
+from reco_analysis.data_model import data_models
+
+session = data_models.get_session()
+
+
+class CredentialsType(TypedDict):
+    credentials: dict[str, typing.Any]
+    cookie: dict[str, str]
+    pre_authorized: str
+
+
+def load_credentials(file_path) -> CredentialsType:
     """
     Load credentials from a YAML file.
 
     Args:
         file_path (str): The path to the YAML file containing the credentials.
-    
+
     Returns:
         dict: A dictionary containing the credentials.
     """
@@ -48,7 +62,10 @@ def load_credentials(file_path):
         credentials = yaml.load(file, Loader=SafeLoader)
     return credentials
 
-def setup_authenticator():
+
+def setup_authenticator() -> (
+    typing.Tuple[stauth.Authenticate, str, bool | None, str, data_models.Patient | None]
+):
     """
     Set up the authenticator for the Streamlit application.
 
@@ -56,24 +73,52 @@ def setup_authenticator():
         tuple: A tuple containing the authenticator object, the user's name, the authentication status, and the username (i.e., the patient ID)
     """
     # Load credentials from the YAML file
-    credentials_path = Path(__file__).parent / 'credentials.yaml'
-    credentials = load_credentials(credentials_path)
+    credentials_path = Path(__file__).parent / "credentials.yaml"
+    credentials_yml = load_credentials(credentials_path)
+
+    # load the credentials from postgresql db
+    usernames = {}
+    all_patients = data_models.Patient.get_all_patients(session)
+    for patient in all_patients:
+        usernames[patient.username] = {
+            "email": patient.email,
+            "patient_id": patient.id,
+            "failed_login_attempts": 0,  # TODO: consider tracking failed login attempts
+            "logged_in": False,
+            "first_name": patient.first_name,
+            "last_name": patient.last_name,
+            "name": patient.first_name + " " + patient.last_name,
+            "password": patient.password,
+        }
 
     # Create an authentication object
     authenticator = stauth.Authenticate(
-        credentials['credentials'],
-        credentials['cookie']['name'],
-        credentials['cookie']['key'],
-        credentials['cookie']['expiry_days'],
-        credentials.get('pre-authorized', None)
+        credentials={"usernames": usernames},
+        cookie_name=credentials_yml["cookie"]["name"],
+        cookie_key=credentials_yml["cookie"]["key"],
+        cookie_expiry_days=credentials_yml["cookie"]["expiry_days"],
+        pre_authorized=credentials_yml.get("pre_authorized", None),
     )
 
-    name, authentication_status, patient_id = authenticator.login(
-        location='main',
-        fields={'Form name': 'Login', 'Username': 'Patient ID', 'Password': 'Password', 'Login': 'Login'}
+    name, authentication_status, patient_username = authenticator.login(
+        location="main",
+        fields={
+            "Form name": "Login",
+            "Username": "Patient Username",
+            "Password": "Password",
+            "Login": "Login",
+        },
     )
 
-    return authenticator, name, authentication_status, patient_id
+    # from patient_username, get the Patient object
+    patient = (
+        session.query(data_models.Patient)
+        .filter(data_models.Patient.username == patient_username)
+        .first()
+    )
+
+    return authenticator, name, authentication_status, patient_username, patient
+
 
 def get_icon(role):
     """
@@ -87,10 +132,11 @@ def get_icon(role):
     """
     return "ai" if role == "Doctor" else "user"
 
+
 def stream_response(role, response_text):
     """
     Stream the response text word by word with a delay.
-    
+
     Args:
         role (str): The role of the speaker ("Doctor" or "Patient").
         response_text (str): The full response text to stream.
@@ -102,6 +148,7 @@ def stream_response(role, response_text):
             full_response += word + " "
             response_placeholder.markdown(full_response)
             time.sleep(0.05)
+
 
 def display_chat_history(agent):
     """
@@ -115,10 +162,11 @@ def display_chat_history(agent):
         with st.chat_message(role, avatar=get_icon(role)):
             st.markdown(content)
 
+
 def handle_user_input(agent):
     """
     Handle user input and process the conversation flow.
-    
+
     Args:
         agent (DialogueAgent): The dialogue agent managing the conversation.
     """
@@ -131,36 +179,39 @@ def handle_user_input(agent):
             st.session_state.turn = "Doctor"  # Next turn is for the doctor
 
             # Generate and display doctor's response (including adding to memory)
-            response = agent.generate_response()   # Generate the response
+            response = agent.generate_response()  # Generate the response
             stream_response("Doctor", response)
 
             st.session_state.turn = "Patient"  # Next turn is for the patient
 
-    
+
 def main():
-    
+
     # Set the page title
     st.set_page_config(page_title="RECO Consultation Tool", page_icon=":hearts:")
-        
+
     # Display the title and description
     with st.sidebar:
         st.title("RECO: Recovery Companion")
-        st.markdown("Welcome to the RECO Consultation Tool! I am here to help you with your recovery journey.")
+        st.markdown(
+            "Welcome to the RECO Consultation Tool! I am here to help you with your recovery journey."
+        )
 
     # Authenticate the user
-    authenticator, name, authentication_status, patient_id = setup_authenticator()
+    authenticator, name, authentication_status, patient_username, patient = setup_authenticator()
 
     # Check if the user is authenticated
-    if authentication_status == True:
-        authenticator.logout('Logout', 'sidebar')
-        st.write(f'Welcome *{name}*')
+    if authentication_status == True and patient is not None:
+        authenticator.logout("Logout", "sidebar")
+        st.write(f"Welcome *{name}*")
 
         # Initialize session state for Streamlit
-        if 'agent' not in st.session_state:
-            st.session_state.agent = DialogueAgent(patient_id = patient_id) # This will add patient_id as an attribute to the DialogueAgent class so that we can associate the patient_id with the conversation history\
+        if "agent" not in st.session_state:
+            st.session_state.agent = DialogueAgent(patient_id=patient.id)
+            # This associates the patient_id with the conversation history
             st.session_state.initial_response_shown = False
             st.session_state.turn = "Doctor"  # Start with the doctor's turn
-        
+
         agent = st.session_state.agent
 
         # Display chat messages from the agent's memory
@@ -179,19 +230,20 @@ def main():
         # Create a button to stop the conversation
         if st.sidebar.button("End Conversation", type="primary", key="end_conversation"):
             st.write("Thank you for using the RECO Consultation tool. Goodbye!")
-            
+
             # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
             with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
                 for message in agent.get_history():
                     file.write(message + "\n")
-     
+
     # Display a warning if the user is not authenticated
     elif authentication_status == False:
-        st.error('Patient ID and/or Password is incorrect')
-    
+        st.error("Patient ID and/or Password is incorrect")
+
     # Display a warning if the user has not entered their username and password
     elif authentication_status == None:
-        st.warning('Please enter your username and password')
-        
+        st.warning("Please enter your username and password")
+
+
 if __name__ == "__main__":
     main()

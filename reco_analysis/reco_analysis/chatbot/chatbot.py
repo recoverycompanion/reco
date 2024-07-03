@@ -81,6 +81,8 @@ from reco_analysis.chatbot.prompts import (
 )
 from reco_analysis.data_model import data_models
 
+session = data_models.get_session()
+
 # Load environment variables
 load_dotenv("../.env")
 
@@ -150,10 +152,10 @@ model = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
 class DialogueAgent:
     def __init__(
         self,
+        patient_id: int,
         role: typing.Optional[str] = "Doctor",
         system_message: typing.Optional[str] = system_message_doctor,
         model: typing.Optional[ChatOpenAI] = model,
-        patient_id: typing.Optional[str] = None,
         session_id: typing.Optional[str] = None,
     ) -> None:
         """
@@ -171,7 +173,7 @@ class DialogueAgent:
         self.model = model
 
         # Set the patient ID
-        self.patient_id = patient_id
+        self.patient: data_models.Patient = data_models.Patient.get_by_id(patient_id, session)
 
         # Set the role of the agent and the human
         role = role.capitalize()
@@ -181,7 +183,17 @@ class DialogueAgent:
         self.human_role = "Doctor" if self.role == "Patient" else "Patient"
 
         # Generate a unique conversation ID if one is not provided
-        self.session_id = str(uuid.uuid4()) if session_id is None else session_id
+        if session_id is None:
+            # create session
+            self.conversation_session = data_models.ConversationSession.new_session(
+                patient_id=self.patient.id, session=session
+            )
+            self.session_id = self.conversation_session.id
+        else:
+            self.session_id = session_id
+            self.conversation_session = data_models.ConversationSession.get_by_id(
+                session_id, session
+            )
 
         # Initialize chat message history to keep track of the entire conversation
         self.memory: BaseChatMessageHistory = get_session_history(self.session_id)
@@ -202,11 +214,11 @@ class DialogueAgent:
         # Define the LLM chain with the model and prompt
         self.chain = self.prompt | self.model | StrOutputParser()
 
-        if use_postgres:
-            self.chain = RunnableWithMessageHistory(
-                self.chain,
-                get_session_history=get_session_history,
-            )
+        # if use_postgres:
+        #     self.chain = RunnableWithMessageHistory(
+        #         self.chain,
+        #         get_session_history=get_session_history,
+        #     )
 
         # Prepare the AI instruction (this acts as guidance for the agent after each run of the chat)
         self.ai_instruct = ai_guidance_doctor if self.role == "Doctor" else ai_guidance_patient
@@ -230,10 +242,13 @@ class DialogueAgent:
             "human_input": self.ai_instruct,
         }
 
-        config = {"configurable": {"session_id": self.session_id}}
+        # config = {"configurable": {"session_id": str(self.session_id)}}
 
         # Run the chain to generate a response
-        response = self.chain.invoke(input_data, config=config)
+        response = self.chain.invoke(
+            input_data,
+            # config=config,
+        )
 
         # Save the AI's response to the memory
         self.send(response)

@@ -15,7 +15,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
@@ -28,8 +28,22 @@ DB = os.getenv("POSTGRES_DB_NAME") or "reco"
 DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 
+ENGINE: Engine | None = None
+SESSION: Session | None = None
+
+
 def get_engine(db_url: str = DB_URL) -> "Engine":
-    return create_engine(db_url)
+    global ENGINE
+    if ENGINE is None:
+        ENGINE = create_engine(db_url)
+    return ENGINE
+
+
+def get_session() -> Session:
+    global SESSION
+    if SESSION is None:
+        SESSION = sessionmaker(bind=get_engine())()
+    return SESSION
 
 
 Base = declarative_base()
@@ -62,6 +76,24 @@ class Patient(Base):
 
     def new_session(self, summary: str | None = None) -> "ConversationSession":
         return ConversationSession(patient_id=self.id, summary=summary)
+
+    @staticmethod
+    def get_by_id(patient_id: int, session: Session) -> "Patient":
+        ret = session.query(Patient).filter(Patient.id == patient_id).first()
+        if not ret:
+            raise ValueError(f"Patient with id {patient_id} not found")
+        return ret
+
+    @staticmethod
+    def get_by_username(username: str, session: Session) -> "Patient":
+        ret = session.query(Patient).filter(Patient.username == username).first()
+        if not ret:
+            raise ValueError(f"Patient with username {username} not found")
+        return ret
+
+    @staticmethod
+    def get_all_patients(session: Session) -> list["Patient"]:
+        return session.query(Patient).all()
 
 
 class HealthcareProvider(Base):
@@ -103,6 +135,22 @@ class ConversationSession(Base):
             f"ConversationSession(patient_id='{self.patient_id}', created_at='{self.created_at}', "
             f"updated_at='{self.updated_at}', summary='{self.summary}')"
         )
+
+    @staticmethod
+    def get_by_id(session_id: uuid.UUID, session: Session) -> "ConversationSession":
+        ret = (
+            session.query(ConversationSession).filter(ConversationSession.id == session_id).first()
+        )
+        if not ret:
+            raise ValueError(f"Session with id {session_id} not found")
+        return ret
+
+    @staticmethod
+    def new_session(patient_id: int, session: Session) -> "ConversationSession":
+        new_session = ConversationSession(patient_id=patient_id)
+        session.add(new_session)
+        session.commit()
+        return new_session
 
 
 class Message(Base):

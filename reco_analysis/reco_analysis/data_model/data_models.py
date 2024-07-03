@@ -20,7 +20,7 @@ from sqlalchemy.orm import relationship
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
 
-USER = "reco_admin"
+USER = os.getenv("POSTGRES_DB_USER") or "reco"
 PASSWORD = os.getenv("POSTGRES_DB_PASSWORD") or "averysecurepasswordthatyouwillneverguess"
 HOST = os.getenv("POSTGRES_DB_HOST") or "localhost"
 PORT = os.getenv("POSTGRES_DB_PORT") or "5432"

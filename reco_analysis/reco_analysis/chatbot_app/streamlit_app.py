@@ -286,18 +286,19 @@ def main():
             password = st.text_input("Password", type="password")
 
             st.write(
-                "Disclaimer: RECO is a research project and not a real medical service, "
+                "**Disclaimer**: RECO is a research project and not a real medical service, "
                 "and because it's based on Generative AI, it can sometimes provide incorrect "
                 "or harmful information."
                 "Any advice given by the chatbot is not a substitute for professional medical advice. "
                 "Please do not enter any sensitive personal information. As the data you enter may be used for research purposes. "
-                "If you have a medical emergency, please call 911.\n"
+                "If you have a medical emergency, please call 911.\n\n"
                 "By signing up, you understand and agree to these terms."
             )
 
+            error_placeholder = st.empty()
             if st.button("Sign up"):
                 if not all([username, first_name, last_name, email, password]):
-                    st.error("Please fill out all fields")
+                    error_placeholder.error("Please fill out all fields")
                 else:
                     try:
                         new_patient = data_models.Patient.new_patient(
@@ -308,12 +309,12 @@ def main():
                             password=password,
                             session=session,
                         )
-                        st.success(
+                        error_placeholder.success(
                             f"New patient account created for {new_patient.first_name} with username {new_patient.username}!"
                         )
                     except ValueError as e:
                         # likely a duplicate username
-                        st.error(f"Error: {e.args[0]}")
+                        error_placeholder.error(f"Error: {e.args[0]}")
 
 
 if __name__ == "__main__":

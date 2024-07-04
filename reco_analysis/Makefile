@@ -87,7 +87,7 @@ aws_configure:
 ## Alembic - Create a new migration
 .PHONY: alembic_migrate
 alembic_migrate:
-	cd reco_analysis/data_model && poetry run alembic revision --autogenerate -m "$(message)"
+	POSTGRES_DB_ENVIRONMENT=$(env) cd reco_analysis/data_model && poetry run alembic revision --autogenerate -m "$(message)"
 
 
 env ?= DEV
@@ -100,12 +100,12 @@ alembic_upgrade:
 ## Alembic - Downgrade to the previous migration
 .PHONY: alembic_downgrade
 alembic_downgrade:
-	cd reco_analysis/data_model && poetry run alembic downgrade -1
+	POSTGRES_DB_ENVIRONMENT=$(env) cd reco_analysis/data_model && poetry run alembic downgrade -1
 
 ## Alembic - Show the current revision
 .PHONY: alembic_current
 alembic_current:
-	cd reco_analysis/data_model && poetry run alembic current
+	POSTGRES_DB_ENVIRONMENT=$(env) cd reco_analysis/data_model && poetry run alembic current
 
 
 ## Create local dev postgres database from scratch (MacOS)

@@ -1,11 +1,13 @@
-## Components of the Chatbot Modules
+# Chatbot App
+
+This is the Streamlit application for the RECO Consultation chatbot, which serves up
+an interactive chat interface for users to converse with a virtual doctor.
+
+## Components of the Chatbot App Module
 
 ### `credentials.yaml`
 
-This file contains user credentials and cookie settings for authentication in the RECO Consultation chatbot.
-
-- **Credentials**: Stores usernames, emails, login status, names, and passwords for users.
-- **Cookie Settings**: Defines the expiry days, key, and name for session cookies.
+This file contains cookie settings for authentication in the RECO Consultation chatbot. Cookie settings include the expiry days, key, and name for session cookies.
 
 ### `streamlit_app.py`
 
@@ -21,8 +23,11 @@ This module defines and runs the Streamlit application for the RECO Consultation
     - `display_chat_history`: Displays the conversation history.
     - `handle_user_input`: Handles user input and processes the conversation flow.
     - `main`: Sets up and runs the Streamlit app, handling interaction flow and session state.
-    
-- **Usage**: Run the app with the command:
+
+- **Pre-requisites**: Ensure that the postgres database is running and up-to-date. Please refer to [data_model/README.md](../data_model/README.md) for more information on database setup.
+
+- **Usage**: Run the app with the command from this directory:
+
   ```sh
   streamlit run streamlit_app.py
   ```

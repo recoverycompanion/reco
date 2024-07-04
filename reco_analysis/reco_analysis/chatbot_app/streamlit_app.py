@@ -170,7 +170,9 @@ def handle_user_input(agent):
     Args:
         agent (DialogueAgent): The dialogue agent managing the conversation.
     """
-    if prompt := st.chat_input("Enter your message:"):
+    if prompt := st.chat_input(
+        "Enter your message:", disabled=st.session_state.conversation_ended
+    ):
         if st.session_state.turn == "Patient":
             # Add user message to the agent's memory
             agent.receive(prompt)
@@ -203,24 +205,37 @@ def main():
     # Check if the user is authenticated
     if authentication_status == True and patient is not None:
         authenticator.logout("Logout", "sidebar")
-        st.write(f"Welcome *{name}*")
+        st.write(f"Welcome *{patient.first_name}*")
 
         # Initialize session state for Streamlit
         if "agent" not in st.session_state:
-            st.session_state.agent = DialogueAgent(patient_id=patient.id)
-            # This associates the patient_id with the conversation history
-            st.session_state.initial_response_shown = False
-            st.session_state.turn = "Doctor"  # Start with the doctor's turn
+            latest_conversation = patient.get_latest_conversation_session()
 
-        agent = st.session_state.agent
+            if latest_conversation is None or latest_conversation.completed:
+                session_id = None
+            else:
+                session_id = latest_conversation.id
+
+            st.session_state.agent = DialogueAgent(
+                patient_id=patient.id,
+                session_id=session_id,
+            )
+            # This associates the patient_id with the conversation history
+            latest_message_role = st.session_state.agent.get_latest_message_role()
+            if latest_message_role is None or latest_message_role == "Patient":
+                st.session_state.turn = "Doctor"  # Start with the doctor's turn
+            else:
+                st.session_state.turn = "Patient"
+            st.session_state.conversation_ended = False
+
+        agent: DialogueAgent = st.session_state.agent
 
         # Display chat messages from the agent's memory
         display_chat_history(agent)
 
         # Display initial doctor's message if not already shown
-        if not st.session_state.initial_response_shown:
+        if st.session_state.turn == "Doctor":
             initial_response = agent.generate_response()
-            st.session_state.initial_response_shown = True
             st.session_state.turn = "Patient"  # After the doctor speaks, it's the patient's turn
             stream_response("Doctor", initial_response)
 
@@ -228,13 +243,32 @@ def main():
         handle_user_input(agent)
 
         # Create a button to stop the conversation
-        if st.sidebar.button("End Conversation", type="primary", key="end_conversation"):
+        if not st.session_state.conversation_ended and st.sidebar.button(
+            "End Conversation",
+            type="primary",
+            key="end_conversation",
+            disabled=st.session_state.conversation_ended,
+        ):
             st.write("Thank you for using the RECO Consultation tool. Goodbye!")
+            st.session_state.conversation_ended = True
+            convo_session: data_models.ConversationSession = (
+                data_models.ConversationSession.get_by_id(agent.session_id, session)
+            )
+            convo_session.mark_as_completed(session)
 
             # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
-            with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
+            conversation_history_dir = Path(__file__).parent.parent.parent / "data/interim"
+            # with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
+            with open(
+                f"{conversation_history_dir}/{agent.session_id}_conversation_history.txt", "w"
+            ) as file:
                 for message in agent.get_history():
                     file.write(message + "\n")
+
+        if st.session_state.conversation_ended:
+            if st.sidebar.button("New Conversation", key="new_conversation"):
+                # delete agent to start a new conversation
+                del st.session_state.agent
 
     # Display a warning if the user is not authenticated
     elif authentication_status == False:

@@ -96,6 +96,13 @@ class Patient(Base):
     def get_all_patients(session: Session) -> list["Patient"]:
         return session.query(Patient).all()
 
+    def get_latest_conversation_session(self) -> "ConversationSession | None":
+        """Get the latest conversation session for the patient. If no session
+        exists, returns None."""
+        if not self.conversation_sessions:
+            return None
+        return self.conversation_sessions[-1]
+
 
 class HealthcareProvider(Base):
     __tablename__ = "healthcare_providers"

@@ -279,3 +279,20 @@ class DialogueAgent:
             else:
                 formatted_history.append(f"System: {msg.content}")
         return formatted_history
+
+    def get_latest_message_role(self) -> str | None:
+        """
+        Get the role of the speaker of the latest message in the conversation history.
+
+        Returns:
+            str: The role of the speaker of the latest message.
+        """
+        if self.memory.messages:
+            latest_message = self.memory.messages[-1]
+            if isinstance(latest_message, HumanMessage):
+                return self.human_role
+            elif isinstance(latest_message, AIMessage):
+                return self.role
+
+        # If no messages are present
+        return None

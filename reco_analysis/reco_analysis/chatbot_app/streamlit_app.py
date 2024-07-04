@@ -270,13 +270,50 @@ def main():
                 # delete agent to start a new conversation
                 del st.session_state.agent
 
-    # Display a warning if the user is not authenticated
-    elif authentication_status == False:
-        st.error("Patient ID and/or Password is incorrect")
+    else:
+        # Display a warning if the user is not authenticated
+        if authentication_status == False:
+            st.error("Patient ID and/or Password is incorrect")
 
-    # Display a warning if the user has not entered their username and password
-    elif authentication_status == None:
-        st.warning("Please enter your username and password")
+        # allow for new patient account sign up
+        with st.popover("Sign up as a new patient"):
+            # use a pop-up to get the patient's information
+            st.write("Sign up as a new patient by entering the following information:")
+            username = st.text_input("Username")
+            first_name = st.text_input("First Name")
+            last_name = st.text_input("Last Name")
+            email = st.text_input("Email")
+            password = st.text_input("Password", type="password")
+
+            st.write(
+                "Disclaimer: RECO is a research project and not a real medical service, "
+                "and because it's based on Generative AI, it can sometimes provide incorrect "
+                "or harmful information."
+                "Any advice given by the chatbot is not a substitute for professional medical advice. "
+                "Please do not enter any sensitive personal information. As the data you enter may be used for research purposes. "
+                "If you have a medical emergency, please call 911.\n"
+                "By signing up, you understand and agree to these terms."
+            )
+
+            if st.button("Sign up"):
+                if not all([username, first_name, last_name, email, password]):
+                    st.error("Please fill out all fields")
+                else:
+                    try:
+                        new_patient = data_models.Patient.new_patient(
+                            username=username,
+                            first_name=first_name,
+                            last_name=last_name,
+                            email=email,
+                            password=password,
+                            session=session,
+                        )
+                        st.success(
+                            f"New patient account created for {new_patient.first_name} with username {new_patient.username}!"
+                        )
+                    except ValueError as e:
+                        # likely a duplicate username
+                        st.error(f"Error: {e.args[0]}")
 
 
 if __name__ == "__main__":

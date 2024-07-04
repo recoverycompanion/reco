@@ -93,6 +93,27 @@ class Patient(Base):
         return ret
 
     @staticmethod
+    def new_patient(
+        username: str, first_name: str, last_name: str, email: str, password: str, session: Session
+    ) -> "Patient":
+        if session.query(Patient).filter(Patient.username == username).first():
+            raise ValueError(f"Patient with username '{username}' already exists")
+
+        if session.query(Patient).filter(Patient.email == email).first():
+            raise ValueError(f"Patient with email '{email}' already exists")
+
+        new_patient = Patient(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+        )
+        session.add(new_patient)
+        session.commit()
+        return new_patient
+
+    @staticmethod
     def get_all_patients(session: Session) -> list["Patient"]:
         return session.query(Patient).all()
 

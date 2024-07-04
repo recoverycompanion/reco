@@ -86,20 +86,7 @@ session = data_models.get_session()
 load_dotenv("../.env")
 
 # if postgres variables are specified, set `use_postgres` to True
-use_postgres = False
-if all(
-    [
-        os.getenv(var)
-        for var in [
-            "POSTGRES_DB_USER",
-            "POSTGRES_DB_PASSWORD",
-            "POSTGRES_DB_HOST",
-            "POSTGRES_DB_PORT",
-            "POSTGRES_DB_NAME",
-        ]
-    ]
-):
-    use_postgres = True
+use_postgres = data_models.connection_env_vars_available()
 
 
 class CustomMessageConverter(DefaultMessageConverter):

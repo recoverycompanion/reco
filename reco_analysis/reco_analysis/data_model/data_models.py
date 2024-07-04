@@ -21,13 +21,25 @@ from sqlalchemy.orm import Session, relationship, sessionmaker
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
 
-USER = os.getenv("POSTGRES_DB_USER") or "reco"
-PASSWORD = os.getenv("POSTGRES_DB_PASSWORD") or "averysecurepasswordthatyouwillneverguess"
-HOST = os.getenv("POSTGRES_DB_HOST") or "localhost"
-PORT = os.getenv("POSTGRES_DB_PORT") or "5432"
-DB = os.getenv("POSTGRES_DB_NAME") or "reco"
-DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "development"
+if ENVIRONMENT not in ["DEV", "PROD"]:
+    raise ValueError("POSTGRES_DB_ENVIRONMENT must be either 'DEV' or 'PROD'")
 
+
+USER = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_USER")
+PASSWORD = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_PASSWORD")
+HOST = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_HOST")
+PORT = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_PORT")
+DB = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_NAME")
+
+
+def connection_env_vars_available() -> bool:
+    return all([USER, PASSWORD, HOST, PORT, DB])
+
+
+DB_URL = (
+    f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}" if connection_env_vars_available() else ""
+)
 
 ENGINE: Engine | None = None
 SESSION: Session | None = None

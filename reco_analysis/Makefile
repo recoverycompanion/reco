@@ -89,10 +89,13 @@ aws_configure:
 alembic_migrate:
 	cd reco_analysis/data_model && poetry run alembic revision --autogenerate -m "$(message)"
 
+
+env ?= DEV
+
 ## Alembic - Upgrade to the latest migration
 .PHONY: alembic_upgrade
 alembic_upgrade:
-	cd reco_analysis/data_model && poetry run alembic upgrade head
+	POSTGRES_DB_ENVIRONMENT=$(env) cd reco_analysis/data_model && poetry run alembic upgrade head
 
 ## Alembic - Downgrade to the previous migration
 .PHONY: alembic_downgrade
@@ -115,9 +118,15 @@ create_dev_db:
 	# create the database
 	createdb reco
 	# create the tables using alembic_upgrade
-	make alembic_upgrade
+	make alembic_upgrade env=DEV
 	# add fake data
-	poetry run python reco_analysis/data_model/init_test_data.py
+	POSTGRES_DB_ENVIRONMENT=DEV poetry run python reco_analysis/data_model/init_test_data.py
+
+## Delete local dev postgres database (local dev only)
+.PHONY: delete_dev_db
+delete_dev_db:
+	# first, drop the database if it exists
+	psql -c "DROP DATABASE IF EXISTS reco" postgres
 
 ## Create prod postgres database from scratch (Linux)
 .PHONY: create_prod_db
@@ -127,7 +136,7 @@ create_prod_db:
 	# create the database
 	createdb reco
 	# create the tables using alembic_upgrade
-	make alembic_upgrade
+	make alembic_upgrade env=PROD
 
 #################################################################################
 # PROJECT RULES                                                                 #

@@ -3,6 +3,7 @@ import uuid
 
 from dotenv import load_dotenv
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Engine,
@@ -129,6 +130,7 @@ class ConversationSession(Base):
 
     patient = relationship("Patient", back_populates="conversation_sessions", uselist=False)
     messages = relationship("Message", back_populates="session")
+    completed = Column(Boolean, default=False)
 
     def __repr__(self):
         return (
@@ -151,6 +153,11 @@ class ConversationSession(Base):
         session.add(new_session)
         session.commit()
         return new_session
+
+    def mark_as_completed(self, session: Session) -> None:
+        """Mark the session as completed once the conversation is done."""
+        self.completed = True
+        session.commit()
 
 
 class Message(Base):

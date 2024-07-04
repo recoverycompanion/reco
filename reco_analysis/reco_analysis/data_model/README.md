@@ -10,6 +10,53 @@ The RECO Database Schema is designed to support a healthcare application that si
 
 ## Models
 
+```mermaid
+classDiagram
+   direction LR
+    class Patient {
+        +Integer id
+        +String username
+        +String first_name
+        +String last_name
+        +DateTime created_at
+        +DateTime updated_at
+        +String email
+        +String password
+        +Integer healthcare_provider_id
+    }
+
+    class HealthcareProvider {
+        +Integer id
+        +String first_name
+        +String last_name
+        +Text description
+        +String email
+        +DateTime created_at
+        +DateTime updated_at
+    }
+
+    class ConversationSession {
+        +UUID id
+        +Integer patient_id
+        +DateTime created_at
+        +DateTime updated_at
+        +Text summary
+        +Boolean completed
+    }
+
+    class Message {
+        +Integer id
+        +UUID session_id
+        +Text message
+        +DateTime timestamp
+    }
+
+    HealthcareProvider --> Patient : manages multiple
+    Patient --> HealthcareProvider : belongs to one
+    Patient --> ConversationSession : has multiple
+    ConversationSession --> Message : contains multiple
+```
+
 - **`Patient`** - Represents a patient with fields for personal information, linked healthcare provider, and conversation sessions.
 
 - **`HealthcareProvider`** - Represents a healthcare provider who can be linked to multiple patients.

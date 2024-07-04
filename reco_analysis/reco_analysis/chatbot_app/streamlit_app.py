@@ -163,16 +163,15 @@ def display_chat_history(agent):
             st.markdown(content)
 
 
-def handle_user_input(agent):
+def handle_user_input(agent, prompt: str | None):
     """
     Handle user input and process the conversation flow.
 
     Args:
         agent (DialogueAgent): The dialogue agent managing the conversation.
+        prompt (str | None): The output from streamlit chat_input component.
     """
-    if prompt := st.chat_input(
-        "Enter your message:", disabled=st.session_state.conversation_ended
-    ):
+    if prompt:
         if st.session_state.turn == "Patient":
             # Add user message to the agent's memory
             agent.receive(prompt)
@@ -233,6 +232,9 @@ def main():
         # Display chat messages from the agent's memory
         display_chat_history(agent)
 
+        # Create a button to stop the conversation
+        conversation_flow_button = st.sidebar.empty()
+
         # Display initial doctor's message if not already shown
         if st.session_state.turn == "Doctor":
             initial_response = agent.generate_response()
@@ -240,33 +242,38 @@ def main():
             stream_response("Doctor", initial_response)
 
         # Accept user input and process the conversation flow
-        handle_user_input(agent)
-
-        # Create a button to stop the conversation
-        if not st.session_state.conversation_ended and st.sidebar.button(
-            "End Conversation",
-            type="primary",
-            key="end_conversation",
-            disabled=st.session_state.conversation_ended,
-        ):
-            st.write("Thank you for using the RECO Consultation tool. Goodbye!")
-            st.session_state.conversation_ended = True
-            convo_session: data_models.ConversationSession = (
-                data_models.ConversationSession.get_by_id(agent.session_id, session)
+        if not st.session_state.conversation_ended:
+            prompt = st.chat_input(
+                "Enter your message:", disabled=st.session_state.conversation_ended
             )
-            convo_session.mark_as_completed(session)
+            handle_user_input(agent, prompt)
 
-            # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
-            conversation_history_dir = Path(__file__).parent.parent.parent / "data/interim"
-            # with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
-            with open(
-                f"{conversation_history_dir}/{agent.session_id}_conversation_history.txt", "w"
-            ) as file:
-                for message in agent.get_history():
-                    file.write(message + "\n")
+            if conversation_flow_button.button(
+                "End Conversation",
+                type="primary",
+                key="end_conversation",
+                disabled=st.session_state.conversation_ended,
+            ):
+                st.session_state.conversation_ended = True
+                convo_session: data_models.ConversationSession = (
+                    data_models.ConversationSession.get_by_id(agent.session_id, session)
+                )
+                convo_session.mark_as_completed(session)
+
+                # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
+                conversation_history_dir = Path(__file__).parent.parent.parent / "data/interim"
+                # with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
+                with open(
+                    f"{conversation_history_dir}/{agent.session_id}_conversation_history.txt", "w"
+                ) as file:
+                    for message in agent.get_history():
+                        file.write(message + "\n")
 
         if st.session_state.conversation_ended:
-            if st.sidebar.button("New Conversation", key="new_conversation"):
+            st.write("Thank you for using the RECO Consultation tool. Goodbye!")
+            if conversation_flow_button.button(
+                "New Conversation", key="new_conversation", type="secondary"
+            ):
                 # delete agent to start a new conversation
                 del st.session_state.agent
 

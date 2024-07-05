@@ -1,4 +1,5 @@
 import datetime
+import json
 import random
 import typing
 
@@ -94,9 +95,24 @@ def create_messages(count=50):
 
     sessions = session.query(ConversationSession).all()
     for _ in range(count):
+        message_dict = {
+            "type": "ai",
+            "data": {
+                "content": "This is a generated message reflecting patient interaction.",
+                "additional_kwargs": {},
+                "response_metadata": {},
+                "type": "ai",
+                "name": "Doctor",
+                "id": None,
+                "example": False,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": None,
+            },
+        }
         message = Message(
             session=random.choice(sessions),
-            message="This is a generated message reflecting patient interaction.",
+            message=json.dumps(message_dict),
             timestamp=start_time + time_passed,
         )
         time_passed += datetime.timedelta(minutes=5)

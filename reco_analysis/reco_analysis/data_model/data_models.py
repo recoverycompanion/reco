@@ -3,6 +3,7 @@ import uuid
 
 from dotenv import load_dotenv
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Engine,
@@ -15,21 +16,47 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
 
-USER = "reco_admin"
-PASSWORD = os.getenv("POSTGRES_DB_PASSWORD") or "averysecurepasswordthatyouwillneverguess"
-HOST = os.getenv("POSTGRES_DB_HOST") or "localhost"
-PORT = os.getenv("POSTGRES_DB_PORT") or "5432"
-DB = os.getenv("POSTGRES_DB_NAME") or "reco"
-DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "development"
+if ENVIRONMENT not in ["DEV", "PROD"]:
+    raise ValueError("POSTGRES_DB_ENVIRONMENT must be either 'DEV' or 'PROD'")
+
+
+USER = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_USER")
+PASSWORD = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_PASSWORD")
+HOST = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_HOST")
+PORT = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_PORT")
+DB = os.getenv(f"POSTGRES_DB_{ENVIRONMENT}_NAME")
+
+
+def connection_env_vars_available() -> bool:
+    return all([USER, PASSWORD, HOST, PORT, DB])
+
+
+DB_URL = (
+    f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}" if connection_env_vars_available() else ""
+)
+
+ENGINE: Engine | None = None
+SESSION: Session | None = None
 
 
 def get_engine(db_url: str = DB_URL) -> "Engine":
-    return create_engine(db_url)
+    global ENGINE
+    if ENGINE is None:
+        ENGINE = create_engine(db_url)
+    return ENGINE
+
+
+def get_session() -> Session:
+    global SESSION
+    if SESSION is None:
+        SESSION = sessionmaker(bind=get_engine())()
+    return SESSION
 
 
 Base = declarative_base()
@@ -62,6 +89,52 @@ class Patient(Base):
 
     def new_session(self, summary: str | None = None) -> "ConversationSession":
         return ConversationSession(patient_id=self.id, summary=summary)
+
+    @staticmethod
+    def get_by_id(patient_id: int, session: Session) -> "Patient":
+        ret = session.query(Patient).filter(Patient.id == patient_id).first()
+        if not ret:
+            raise ValueError(f"Patient with id {patient_id} not found")
+        return ret
+
+    @staticmethod
+    def get_by_username(username: str, session: Session) -> "Patient":
+        ret = session.query(Patient).filter(Patient.username == username).first()
+        if not ret:
+            raise ValueError(f"Patient with username {username} not found")
+        return ret
+
+    @staticmethod
+    def new_patient(
+        username: str, first_name: str, last_name: str, email: str, password: str, session: Session
+    ) -> "Patient":
+        if session.query(Patient).filter(Patient.username == username).first():
+            raise ValueError(f"Patient with username '{username}' already exists")
+
+        if session.query(Patient).filter(Patient.email == email).first():
+            raise ValueError(f"Patient with email '{email}' already exists")
+
+        new_patient = Patient(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+        )
+        session.add(new_patient)
+        session.commit()
+        return new_patient
+
+    @staticmethod
+    def get_all_patients(session: Session) -> list["Patient"]:
+        return session.query(Patient).all()
+
+    def get_latest_conversation_session(self) -> "ConversationSession | None":
+        """Get the latest conversation session for the patient. If no session
+        exists, returns None."""
+        if not self.conversation_sessions:
+            return None
+        return self.conversation_sessions[-1]
 
 
 class HealthcareProvider(Base):
@@ -97,12 +170,34 @@ class ConversationSession(Base):
 
     patient = relationship("Patient", back_populates="conversation_sessions", uselist=False)
     messages = relationship("Message", back_populates="session")
+    completed = Column(Boolean, default=False)
 
     def __repr__(self):
         return (
             f"ConversationSession(patient_id='{self.patient_id}', created_at='{self.created_at}', "
             f"updated_at='{self.updated_at}', summary='{self.summary}')"
         )
+
+    @staticmethod
+    def get_by_id(session_id: uuid.UUID, session: Session) -> "ConversationSession":
+        ret = (
+            session.query(ConversationSession).filter(ConversationSession.id == session_id).first()
+        )
+        if not ret:
+            raise ValueError(f"Session with id {session_id} not found")
+        return ret
+
+    @staticmethod
+    def new_session(patient_id: int, session: Session) -> "ConversationSession":
+        new_session = ConversationSession(patient_id=patient_id)
+        session.add(new_session)
+        session.commit()
+        return new_session
+
+    def mark_as_completed(self, session: Session) -> None:
+        """Mark the session as completed once the conversation is done."""
+        self.completed = True
+        session.commit()
 
 
 class Message(Base):

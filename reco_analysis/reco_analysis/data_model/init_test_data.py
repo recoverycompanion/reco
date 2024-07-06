@@ -45,7 +45,7 @@ def create_name() -> typing.Tuple[str, str]:
 
 
 def create_healthcare_providers(count=5):
-    HealthcareProvider.create_default_healthcare_provider()
+    HealthcareProvider.create_default_healthcare_provider(session=session)
 
     for _ in range(count):
         first_name, last_name = create_name()

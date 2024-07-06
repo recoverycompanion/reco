@@ -45,17 +45,7 @@ def create_name() -> typing.Tuple[str, str]:
 
 
 def create_healthcare_providers(count=5):
-    for _ in range(count):
-        first_name, last_name = create_name()
-        provider = HealthcareProvider(
-            first_name=first_name,
-            last_name=last_name,
-            email=create_email(f"{first_name}.{last_name}"),
-            description="A dedicated healthcare professional.",
-            created_at=start_time,
-        )
-        session.add(provider)
-    session.commit()
+    HealthcareProvider.create_default_healthcare_provider(session=session)
 
 
 def create_patients(count=10):

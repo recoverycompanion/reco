@@ -15,10 +15,7 @@ df = pd.read_csv(starting_csv_file_name)
 
 def clean_chief_complaint(s):
     if '"' in s:
-        if s[0] == '"':
-            s = s[1:]
-        if s[-1] == '"':
-            s = s[:-1]
+        s = s.replace('"', '')
     for cc in ccs_to_omit:
         if cc in s:
             if ", " + cc in s:

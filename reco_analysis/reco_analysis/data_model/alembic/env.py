@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from reco_analysis.data_model.data_models import Base
+from reco_analysis.data_model.data_models import DB_URL, Base
 
 target_metadata = Base.metadata
 
@@ -28,14 +28,8 @@ target_metadata = Base.metadata
 # ... etc.
 
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
-load_dotenv(env_file_path)
+load_dotenv(env_file_path, override=False)
 
-USER = "reco_admin"
-PASSWORD = os.getenv("POSTGRES_DB_PASSWORD") or "averysecurepasswordthatyouwillneverguess"
-HOST = os.getenv("POSTGRES_DB_HOST") or "localhost"
-PORT = os.getenv("POSTGRES_DB_PORT") or "5432"
-DB = os.getenv("POSTGRES_DB_NAME") or "reco"
-DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 config.set_main_option("sqlalchemy.url", DB_URL)
 

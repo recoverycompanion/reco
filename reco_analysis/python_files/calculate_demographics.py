@@ -2,7 +2,12 @@ import pandas as pd
 import numpy as np
 import os
 
+### KEY USER INPUTS!
+
+# How many synthetic patients do you want to generate in total?
 records_to_generate = 20
+
+# Calculate recommended demographics for the number of patients defined above
 
 print()
 print(f"To generate {records_to_generate} patients\nConsider the following demographics:")
@@ -12,7 +17,7 @@ os.chdir(new_directory)
 
 list_dir = os.listdir()
 
-csv_file_name = list_dir[1]
+csv_file_name = 'mimic_ed_hf_cleaned_06_30_2024.csv'
 
 df = pd.read_csv(csv_file_name)
 

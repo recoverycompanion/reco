@@ -61,11 +61,13 @@ def get_session() -> Session:
 
 Base = declarative_base()
 
+default_hcp_email = "mike.khor@berkeley.edu"  # for now
+
 
 class Patient(Base):
     __tablename__ = "patients"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
@@ -79,6 +81,17 @@ class Patient(Base):
     conversation_sessions = relationship(
         "ConversationSession", back_populates="patient", uselist=True
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # after init, also set healthcare_provider_id to default_hcp, if not set
+        if not self.healthcare_provider_id:
+            try:
+                hcp = HealthcareProvider.get_by_email(default_hcp_email, get_session())
+                self.healthcare_provider_id = hcp.id
+            except ValueError:
+                pass
 
     def __repr__(self):
         return (
@@ -140,7 +153,7 @@ class Patient(Base):
 class HealthcareProvider(Base):
     __tablename__ = "healthcare_providers"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
@@ -152,9 +165,42 @@ class HealthcareProvider(Base):
 
     def __repr__(self):
         return (
-            f"HealthcareProvider(first_name='{self.first_name}', last_name='{self.last_name}', "
-            f"email='{self.email}', created_at='{self.created_at}', updated_at='{self.updated_at}')"
+            f"HealthcareProvider("
+            f"id='{self.id}', "
+            f"first_name='{self.first_name}', "
+            f"last_name='{self.last_name}', "
+            f"email='{self.email}', "
+            f"created_at='{self.created_at}', "
+            f"updated_at='{self.updated_at}')"
         )
+
+    @staticmethod
+    def get_by_id(provider_id: int, session: Session) -> "HealthcareProvider":
+        ret = (
+            session.query(HealthcareProvider).filter(HealthcareProvider.id == provider_id).first()
+        )
+        if not ret:
+            raise ValueError(f"Healthcare provider with id {provider_id} not found")
+        return ret
+
+    @staticmethod
+    def get_by_email(email: str, session: Session) -> "HealthcareProvider":
+        ret = session.query(HealthcareProvider).filter(HealthcareProvider.email == email).first()
+        if not ret:
+            raise ValueError(f"Healthcare provider with email {email} not found")
+        return ret
+
+    @staticmethod
+    def create_default_healthcare_provider(session: Session) -> "HealthcareProvider":
+        default_hcp = HealthcareProvider(
+            first_name="Ray",
+            last_name="ReCo",
+            description="A friendly default healthcare provider",
+            email=default_hcp_email,
+        )
+        session.add(default_hcp)
+        session.commit()
+        return default_hcp
 
 
 class ConversationSession(Base):
@@ -203,7 +249,7 @@ class ConversationSession(Base):
 class Message(Base):
     __tablename__ = "message_store"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(UUID(as_uuid=True), ForeignKey("conversation_sessions.id"), nullable=False)
     # typical message is quite long, and we have to account for worst case
     message = Column(Text, nullable=False)

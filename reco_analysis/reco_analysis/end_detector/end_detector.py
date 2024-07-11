@@ -9,21 +9,7 @@ load_dotenv()
 
 # Define the prompt template text
 PROMPT_TEXT = """
-You are analyzing snippets from a conversation between a doctor and a patient. Your task is to determine if the conversation is coming to a close based on the Doctor and the Patient. Respond with 'True' if the conversation is coming to a close, and 'False' otherwise.
-
-### Patterns indicating a continuation:
-1. Doctor asking for more information, even if it includes terms like 'lastly' or 'finally'.
-2. Patient providing additional information.
-3. Patient asking questions.
-
-### Patterns indicating a closing:
-1. Doctor or Patient explicitly saying "Goodbye."
-2. Doctor providing final instructions or reminders.
-3. Doctor providing encouragement for future contact.
-4. Patient saying that they will make further contact if needed.
-5. Doctor expressing care and well wishes.
-6. Doctor asking if the Patient has any more questions or concerns.
-7. Patient stating that they don't have any more questions or concerns.
+You are analyzing a conversation between a doctor and a patient. Your task is to determine if the conversation is coming to a close based on the Doctor and the Patient. Respond with 'True' if the conversation is coming to a close, and 'False' otherwise.
 
 Follow the provided examples to understand the criteria:
 
@@ -35,6 +21,36 @@ Follow the provided examples to understand the criteria:
 ### Example 2:
 **Doctor:** Based on our conversation, Kevin, it seems like you are mainly experiencing tiredness and leg swelling. Could you please provide your latest vital signs, starting with your temperature?  
 **Patient:** My temperature is 97.4 degrees, Doctor.  
+**Response:** False
+
+### Example 3:
+**Doctor:** Thank you for sharing your oxygen saturation level, Kevin. Lastly, could you provide me with your blood pressure reading?  
+**Patient:** My blood pressure is 127/70, Doctor.  
+**Response:** False
+
+### Example 4:
+**Doctor:** Thank you for sharing your current medications, Kevin. Is there any other medication you are taking for your heart condition or any other health issue?  
+**Patient:** No, Doctor, those are the main ones for my heart. I also take some fish oil for general health.  
+**Response:** False
+
+### Example 5:
+**Doctor:** Thank you for sharing your respiratory rate, Gregory. Could you now provide your oxygen saturation level for me?  
+**Patient:** My oxygen saturation level is 99.0, Doctor. It's good to see that it's in a healthy range.  
+**Response:** False
+
+### Example 6:
+**Doctor:** Thank you for sharing about your medications. It's important to continue taking them as prescribed. Please remember to reach out to your healthcare provider if you notice any significant changes or worsening of symptoms. If you have any further concerns or questions, feel free to share them with me.
+**Patient:** Thank you, Doctor. Um... I will definitely reach out if I notice any changes. I appreciate your help and advice.  
+**Response:** True
+
+### Example 7:
+**Doctor:** Thank you for sharing your blood pressure, Maria. Lastly, could you provide me with your current weight?  
+**Patient:** I'm sorry, Doctor, I don't have a scale at home to check my weight.  
+**Response:** False
+
+### Example 8:
+**Doctor:** Thank you for sharing your current medications, Jennifer. Are you taking any other medications apart from Beta-Blockers and Diuretics?  
+**Patient:** No, Doctor, those are the main ones I'm taking right now. Um... I try to remember to take them at the right times every day.  
 **Response:** False
 
 Now, analyze the following conversation and determine if it is coming to a close:

@@ -320,17 +320,17 @@ tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "p
 
 [[package]]
 name = "awscli"
-version = "1.33.25"
+version = "1.33.24"
 description = "Universal Command Line Environment for AWS."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "awscli-1.33.25-py3-none-any.whl", hash = "sha256:6693c533e13d02e8d9ae901c4ec8124b730f0550ec73845309a97daad22f8721"},
-    {file = "awscli-1.33.25.tar.gz", hash = "sha256:c70d7e580b8e6c045a2de0ee3de5824cd89c5c66031997e619c4bc14f02f9d3a"},
+    {file = "awscli-1.33.24-py3-none-any.whl", hash = "sha256:f45d2ff018d54c69142d8e5722ed94566ac9960b10b7bea08cc58798db1f84fb"},
+    {file = "awscli-1.33.24.tar.gz", hash = "sha256:d70e244093a653a512eba02d86fb96c2951bd8f68908f9568f74bd2766f05eaa"},
 ]
 
 [package.dependencies]
-botocore = "1.34.143"
+botocore = "1.34.142"
 colorama = ">=0.2.5,<0.4.7"
 docutils = ">=0.10,<0.17"
 PyYAML = ">=3.10,<6.1"
@@ -487,13 +487,13 @@ files = [
 
 [[package]]
 name = "botocore"
-version = "1.34.143"
+version = "1.34.142"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.143-py3-none-any.whl", hash = "sha256:094aea179e8aaa1bc957ad49cc27d93b189dd3a1f3075d8b0ca7c445a2a88430"},
-    {file = "botocore-1.34.143.tar.gz", hash = "sha256:059f032ec05733a836e04e869c5a15534420102f93116f3bc9a5b759b0651caf"},
+    {file = "botocore-1.34.142-py3-none-any.whl", hash = "sha256:9d8095bab0b93b9064e856730a7ffbbb4f897353d3170bec9ddccc5f4a3753bc"},
+    {file = "botocore-1.34.142.tar.gz", hash = "sha256:2eeb8e6be729c1f8ded723970ed6c6ac29cc3014d86a99e73428fa8bdca81f63"},
 ]
 
 [package.dependencies]
@@ -589,6 +589,17 @@ files = [
 
 [package.dependencies]
 pycparser = "*"
+
+[[package]]
+name = "chardet"
+version = "5.2.0"
+description = "Universal encoding detector for Python 3"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "chardet-5.2.0-py3-none-any.whl", hash = "sha256:e1cf59446890a00105fe7b7912492ea04b6e6f06d4b742b2c788469e34c82970"},
+    {file = "chardet-5.2.0.tar.gz", hash = "sha256:1b3b6ff479a8c414bc3fa2c0852995695c4a026dcd6d0633b2dd092ca39c1cf7"},
+]
 
 [[package]]
 name = "charset-normalizer"
@@ -2077,13 +2088,13 @@ langchain-core = ">=0.2.10,<0.3.0"
 
 [[package]]
 name = "langsmith"
-version = "0.1.85"
+version = "0.1.84"
 description = "Client library to connect to the LangSmith LLM Tracing and Evaluation Platform."
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langsmith-0.1.85-py3-none-any.whl", hash = "sha256:c1f94384f10cea96f7b4d33fd3db7ec180c03c7468877d50846f881d2017ff94"},
-    {file = "langsmith-0.1.85.tar.gz", hash = "sha256:acff31f9e53efa48586cf8e32f65625a335c74d7c4fa306d1655ac18452296f6"},
+    {file = "langsmith-0.1.84-py3-none-any.whl", hash = "sha256:01f3c6390dba26c583bac8dd0e551ce3d0509c7f55cad714db0b5c8d36e4c7ff"},
+    {file = "langsmith-0.1.84.tar.gz", hash = "sha256:5220c0439838b9a5bd320fd3686be505c5083dcee22d2452006c23891153bea1"},
 ]
 
 [package.dependencies]
@@ -3860,6 +3871,26 @@ files = [
 ]
 
 [[package]]
+name = "reportlab"
+version = "4.2.2"
+description = "The Reportlab Toolkit"
+optional = false
+python-versions = "<4,>=3.7"
+files = [
+    {file = "reportlab-4.2.2-py3-none-any.whl", hash = "sha256:927616931637e2f13e2ee3b3b6316d7a07803170e258621cff7d138bde17fbb5"},
+    {file = "reportlab-4.2.2.tar.gz", hash = "sha256:765eecbdd68491c56947e29c38b8b69b834ee5dbbdd2fb7409f08ebdebf04428"},
+]
+
+[package.dependencies]
+chardet = "*"
+pillow = ">=9.0.0"
+
+[package.extras]
+accel = ["rl-accel (>=0.9.0,<1.1)"]
+pycairo = ["freetype-py (>=2.3.0,<2.4)", "rlPyCairo (>=0.2.0,<1)"]
+renderpm = ["rl-renderPM (>=4.0.3,<4.1)"]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
@@ -5240,4 +5271,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.7"
-content-hash = "45830c9aba32df2e377d7690bb0c1babd26ce326184ecfcc801da45cbbab5995"
+content-hash = "938e6db804d81f56255d2899fc476235c3c6ad0973c245475009882acafba554"

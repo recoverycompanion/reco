@@ -168,8 +168,6 @@ for pt_race, count in demographics.items():
 
     list_to_choose_from = interim_df['stay_id'].to_list()
 
-    print(f"Creating {pt_race} patients now")
-
     for i in range(count):
         patient = {}
 

@@ -17,8 +17,7 @@ You are analyzing snippets from a conversation between a doctor and a patient. Y
 3. Patient asking questions.
 
 ### Patterns indicating a closing:
-1. Doctor explicitly saying "Goodbye."
-2. Patient explicitly saying "Goodbye."
+1. Doctor or Patient explicitly saying "Goodbye."
 2. Doctor providing final instructions or reminders.
 3. Doctor providing encouragement for future contact.
 4. Patient saying that they will make further contact if needed.

@@ -164,24 +164,30 @@ for pt_race, count in demographics.items():
     interim_df = fresh_df[fresh_df['race'] == pt_race]
     interim_df = interim_df.reset_index()
 
+    df_filtered = interim_df[~interim_df['subject_id'].isin(patients_to_exclude)]
+
+    list_to_choose_from = interim_df['stay_id'].to_list()
+
+    print(f"Creating {pt_race} patients now")
+
     for i in range(count):
         patient = {}
-        attempts = 0
-        
-        while attempts < 11:
-            random_row_index = np.random.choice(interim_df.index)
-            random_row = interim_df.iloc[random_row_index]
 
-            random_patient_id = random_row['subject_id']
+        if list_to_choose_from:
+            # Select a random item from the list
+            random_stay_id = random.choice(list_to_choose_from)
+            # Remove the selected item from the list
+            list_to_choose_from.remove(random_stay_id)
+            # Return the randomly selected item
+        else:
+            # If the list is empty, return None or raise an exception as needed
+            raise ValueError(f"Ran out of patients to choose from this demographic group: {pt_race}")
 
-            if random_patient_id not in patients_to_exclude:
-                break
-            else:
-                attempts +=1
-                continue
+        random_row_index = df_filtered.index[df_filtered['stay_id']==random_stay_id]
 
-        if attempts == 11:
-            raise ValueError("Error during patient generation (race: {pt_race}). Too many patients may be excluded.")
+        random_index_value = random_row_index[0]
+
+        random_row = df_filtered.iloc[random_index_value]
 
         prompt = turn_row_into_prompt(random_row)
 

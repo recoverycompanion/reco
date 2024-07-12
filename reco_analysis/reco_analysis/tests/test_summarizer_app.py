@@ -40,9 +40,10 @@ test_transcript = [
 
 @pytest.mark.timeout(5)
 def test_summarizer_app():
-    summary = summarizer_engine.summarize(test_transcript)
+    summary, response_message = summarizer_engine.summarize(test_transcript)
 
     print(summary)
+    print(response_message)
 
     assert len(summary.patient_overview) > 10
     assert len(summary.current_symptoms) >= 1

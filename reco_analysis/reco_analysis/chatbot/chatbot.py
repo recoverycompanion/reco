@@ -47,7 +47,6 @@ Notes:
 - Ensure environment variables, especially API keys, are set up using a `.env` file.
 - Define system messages and AI guidance in `prompts.py`.
 - This code is typically copied from `notebooks/chatbot.ipynb` to `reco_analysis/reco_analysis/chatbot.py`.
-
 """
 
 import json

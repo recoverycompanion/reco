@@ -26,7 +26,7 @@ from reco_analysis.summarizer_app import data_type as summarizer_data_type
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
 
-ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "development"
+ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "DEV"
 if ENVIRONMENT not in ["DEV", "PROD"]:
     raise ValueError("POSTGRES_DB_ENVIRONMENT must be either 'DEV' or 'PROD'")
 

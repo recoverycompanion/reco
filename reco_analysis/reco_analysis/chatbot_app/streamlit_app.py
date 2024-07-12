@@ -247,6 +247,7 @@ def confirm_conversation_end(agent):
     stream_response("Doctor", message)
 
     # Create a container for the buttons
+    # TODO: MAKE SURE CHAT IS DISABLED AFTER CLICKING YES
     with st.container():
         if st.button("Yes"):
             agent.receive("Yes")

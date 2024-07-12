@@ -1,8 +1,15 @@
+"""Summarizer Engine.
+
+This module contains the summarizer engine, which is responsible for summarizing
+patient transcripts. Input is a patient transcript, and output is a summary json
+of the patient's overview, current symptoms, vital signs, current medications,
+and a summary of the patient's condition."""
+
 import dataclasses
 import json
+import typing
 
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema.output_parser import StrOutputParser
 from langchain_openai import ChatOpenAI
 
 from reco_analysis.summarizer_app.prompts import system_message_summarize_json
@@ -24,50 +31,59 @@ class VitalSigns:
 @dataclasses.dataclass
 class TranscriptSummary:
     patient_overview: str
-    current_symptoms: list[str]
+    current_symptoms: str
     vital_signs: VitalSigns
-    current_medications: list[str]
-    summary: list[str]
+    current_medications: str
+    summary: str
 
 
 def summarize(
-    patient_transcript,
+    patient_transcript: list[str],
     model: ChatOpenAI = default_model,
     system_prompt: str = system_message_summarize_json,
 ) -> TranscriptSummary:
     """Summarizes a patient transcript.
 
     Args:
-        patient_transcript (str): The patient transcript to summarize.
+        patient_transcript (list[str]): The patient transcript to summarize.
         model (ChatOpenAI, optional): The model to use for summarization.
             Defaults to default_model.
         system_prompt (str, optional): The system prompt to use.
     """
+    prompt_template = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            ("user", "\n".join(patient_transcript)),
+        ]
+    )
 
-    parser = StrOutputParser()
-    prompt_template = ChatPromptTemplate.from_messages([("system", system_prompt)])
-
-    chain = prompt_template | model | parser
-    result = chain.invoke({"text": patient_transcript})
+    response = model.invoke(prompt_template.format_messages())
+    result_summary = response.content
 
     try:
         # Process the result, remove markdown and convert to JSON
         processed_result = json.loads(
-            result.replace("```json", "").replace("```", "").replace("\n", "")
+            result_summary.replace("```json", "").replace("```", "").replace("\n", "")
         )
+        vitals: typing.Dict[str, typing.Any] = processed_result["vital_signs"]
+
+        def get_vital(vital_name: str) -> typing.Any:
+            ret = vitals.get(vital_name, None)
+            if ret in ["N/A", "None", "null"]:
+                return None
+            return ret
+
         return TranscriptSummary(
             patient_overview=processed_result["patient_overview"],
             current_symptoms=processed_result["current_symptoms"],
             vital_signs=VitalSigns(
-                temperature=processed_result["vital_signs"]["temperature"],
-                heart_rate=processed_result["vital_signs"]["heart_rate"],
-                respiratory_rate=processed_result["vital_signs"]["respiratory_rate"],
-                oxygen_saturation=processed_result["vital_signs"]["oxygen_saturation"],
-                blood_pressure_systolic=processed_result["vital_signs"]["blood_pressure_systolic"],
-                blood_pressure_diastolic=processed_result["vital_signs"][
-                    "blood_pressure_diastolic"
-                ],
-                weight=processed_result["vital_signs"]["weight"],
+                temperature=get_vital("temperature"),
+                heart_rate=get_vital("heart_rate"),
+                respiratory_rate=get_vital("respiratory_rate"),
+                oxygen_saturation=get_vital("oxygen_saturation"),
+                blood_pressure_systolic=get_vital("blood_pressure_systolic"),
+                blood_pressure_diastolic=get_vital("blood_pressure_diastolic"),
+                weight=get_vital("weight"),
             ),
             current_medications=processed_result["current_medications"],
             summary=processed_result["summary"],

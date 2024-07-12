@@ -5,7 +5,7 @@ import random
 import dotenv
 import pytest
 
-from reco_analysis.summarizer_app import summarizer_lambda
+from reco_analysis.summarizer_app import summarizer_engine
 
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 dotenv.load_dotenv(env_file_path)
@@ -39,7 +39,7 @@ Doctor: Goodbye, {fake_patient_name}, and keep monitoring your condition."
 
 @pytest.mark.timeout(5)
 def test_summarizer_app():
-    summary = summarizer_lambda.summarize(test_transcript)
+    summary = summarizer_engine.summarize(test_transcript)
 
     print(summary)
 

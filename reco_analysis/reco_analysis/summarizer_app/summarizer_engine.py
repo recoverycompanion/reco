@@ -14,7 +14,7 @@ from langchain_openai import ChatOpenAI
 
 from reco_analysis.summarizer_app.prompts import system_message_summarize_json
 
-default_model = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+default_model = ChatOpenAI(temperature=0.0, model_name="gpt-3.5-turbo")
 
 
 @dataclasses.dataclass
@@ -27,6 +27,9 @@ class VitalSigns:
     blood_pressure_diastolic: float | None
     weight: float | None
 
+    def to_json(self) -> str:
+        return json.dumps(dataclasses.asdict(self))
+
 
 @dataclasses.dataclass
 class TranscriptSummary:
@@ -35,6 +38,9 @@ class TranscriptSummary:
     vital_signs: VitalSigns
     current_medications: str
     summary: str
+
+    def to_json(self) -> str:
+        return json.dumps(dataclasses.asdict(self))
 
 
 def summarize(
@@ -69,7 +75,7 @@ def summarize(
 
         def get_vital(vital_name: str) -> typing.Any:
             ret = vitals.get(vital_name, None)
-            if ret in ["N/A", "None", "null"]:
+            if not isinstance(ret, (int, float)):
                 return None
             return ret
 
@@ -91,32 +97,3 @@ def summarize(
 
     except json.JSONDecodeError as e:
         raise ValueError("Failed to decode JSON from model output") from e
-
-
-# Uncomment out all code below to test locally
-# ------------------------------------------------
-
-# import os
-# import random
-
-# import dotenv
-
-# env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
-# dotenv.load_dotenv(env_file_path)
-
-# # Specify the path to an example JSON file
-# transcripts_version = "1.0"
-# current_file_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.join(__file__))))
-# json_file_path = (
-#     f"{current_file_path}/data/patients/patients_{transcripts_version}_with_transcripts.json"
-# )
-# print(json_file_path)
-# with open(json_file_path, "r") as json_file:
-#     patients = json.load(json_file)
-# random_key = random.choice(list(patients.keys()))
-# patient_transcript = "".join(patients[random_key]["chat_transcript"])
-# print(patient_transcript)
-
-
-# # Uncomment the line below to test locally (this line should not be deployed to AWS Lambda)
-# print(summarize(patient_transcript))

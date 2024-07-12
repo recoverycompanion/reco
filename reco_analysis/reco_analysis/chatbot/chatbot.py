@@ -79,6 +79,7 @@ from reco_analysis.chatbot.prompts import (
     system_message_doctor,
 )
 from reco_analysis.data_model import data_models
+from reco_analysis.end_detector.end_detector import detect_end
 
 session = data_models.get_session()
 
@@ -203,11 +204,38 @@ class DialogueAgent:
         # Prepare the AI instruction (this acts as guidance for the agent after each run of the chat)
         self.ai_instruct = ai_guidance_doctor if self.role == "Doctor" else ai_guidance_patient
 
+        # Initialize end of conversation flag
+        self.end_conversation = False
+
     def reset(self) -> None:
         """
         Resets the conversation history in memory
         """
         self.memory.clear()
+        self.end_conversation = False
+
+    def get_last_doctor_patient_messages(self) -> typing.Tuple[str, str]:
+        """
+        Retrieves the last doctor and patient messages from the conversation history.
+        
+        Returns:
+            Tuple[str, str]: A tuple containing the last doctor and patient messages.
+        """
+        last_doctor_message = None
+        last_patient_message = None
+
+        if len(self.memory.messages) >= 2 and self.memory.messages[-1].name == 'Patient' and self.memory.messages[-2].name == 'Doctor':
+            last_doctor_message = self.memory.messages[-2].content
+            last_patient_message = self.memory.messages[-1].content
+
+        return last_doctor_message, last_patient_message
+    
+    def detect_and_handle_end(self) -> None:
+        """
+        Detects the end of the conversation based on the last doctor and patient messages.
+        """
+        last_doctor_message, last_patient_message = self.get_last_doctor_patient_messages()
+        self.end_conversation = detect_end(doctor_input=last_doctor_message, patient_input=last_patient_message)
 
     def generate_response(self) -> str:
         """
@@ -227,6 +255,9 @@ class DialogueAgent:
 
         # Save the AI's response to the memory
         self.send(response)
+
+        # Detect and handle the end of the conversation if the role is Patient
+        self.detect_and_handle_end() if self.role == 'Patient' else None
 
         return response
 
@@ -249,6 +280,9 @@ class DialogueAgent:
         """
         # Save the user input to the conversation memory
         self.memory.add_message(HumanMessage(content=message, name=self.human_role))
+
+        # Detect end of conversation if the role is Doctor
+        self.detect_and_handle_end() if self.role == 'Doctor' else None
 
     def get_history(self) -> typing.List[str]:
         """

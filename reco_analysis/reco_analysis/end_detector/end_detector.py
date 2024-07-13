@@ -118,10 +118,13 @@ def contains_closing_terms(text: str, closing_terms: list[str]) -> bool:
     Returns:
         bool: True if the text contains any of the closing terms, False otherwise.
     """
-    for term in closing_terms:
-        if re.search(rf"\b{term}\b", text, re.IGNORECASE):
-            return True
-    return False
+    if text is None:
+        return False
+    else:
+        for term in closing_terms:
+            if re.search(rf"\b{term}\b", text, re.IGNORECASE):
+                return True
+        return False
 
 def detect_end(doctor_input: str, patient_input: str) -> bool:
     """

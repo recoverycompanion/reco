@@ -40,6 +40,7 @@ def summarize_conversation(
         raise ValueError("No transcript found for the conversation session.")
 
     if not conversation_session.summary:
+        print("Summarizing the conversation transcript.")
         # Summarize the conversation transcript
         summary, response_message = summarizer_engine.summarize(
             patient_transcript=patient_transcript,
@@ -52,23 +53,29 @@ def summarize_conversation(
             session=data_models.get_session(),
         )
     else:
+        print("Summary already exists in the database.")
         summary = conversation_session.transcript_summary
 
     # Create the PDF report -- pdf_report is a bytes object
     pdf_report = report_maker.create_patient_report(
         summary_data=summary,
         transcript=patient_transcript,
+        patient_first_name=conversation_session.patient.first_name,
+        patient_last_name=conversation_session.patient.last_name,
+        conversation_start_time=conversation_session.created_at,
+        conversation_end_time=conversation_session.messages[-1].timestamp,
+        output_filename="test_report.pdf",
     )
 
-    # TODO: Email the summary to the HCP
+    # Email the summary to the HCP
     patient = conversation_session.patient
     if hcp := patient.healthcare_provider:
-        post_office.email_report(pdf_report, hcp, patient)
+        post_office.email_report(pdf_report, hcp, patient, conversation_session)
 
     return pdf_report
 
 
 # test
 if __name__ == "__main__":
-    conversation_session_id = "489a8c74-c092-4ebe-bb55-273cf536bc86"
+    conversation_session_id = "f1a2dfbc-262b-4d09-a01c-62f137aca191"
     summarize_conversation(conversation_session_id)

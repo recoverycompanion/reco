@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import pytest
@@ -36,5 +37,11 @@ def fake_transcript():
 
 def test_report_maker(summary_data, fake_transcript):
     ret = report_maker.create_patient_report(
-        summary_data, fake_transcript, test_module_path + "/test_report.pdf"
+        summary_data,
+        fake_transcript,
+        patient_first_name="John",
+        patient_last_name="Doe",
+        conversation_start_time=datetime.datetime.now() - datetime.timedelta(minutes=70),
+        conversation_end_time=datetime.datetime.now(),
+        output_filename=test_module_path + "/test_report.pdf",
     )

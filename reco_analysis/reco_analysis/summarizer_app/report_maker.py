@@ -9,6 +9,7 @@ Output: A PDF report summarizing the patient's overview, current symptoms, vital
 """
 
 import copy
+import datetime
 import os
 
 from PIL import Image as PILImage
@@ -26,6 +27,10 @@ logo_path = os.path.join(reco_analysis_path, "static", "reco_logo.jpeg")
 def create_patient_report(
     summary_data: data_type.TranscriptSummary,
     transcript: list[str],
+    patient_first_name: str,
+    patient_last_name: str,
+    conversation_start_time: datetime.datetime,
+    conversation_end_time: datetime.datetime,
     output_filename: str | None = None,
 ) -> bytes:
     """Create a PDF report summarizing the patient's conversation with the virtual doctor.
@@ -53,9 +58,22 @@ def create_patient_report(
     c.setFont(title_style, 18)
     c.drawImage(logo_path, 50, 720, width=img_width / 4, height=img_height / 4)
     c.drawString(88, 727, title)
+    c.line(50, 710, 550, 710)  # Draw a line under the title
+
+    # Draw patient name and conversation date
+    c.setFont(section_content_style, 11)
+    c.drawString(50, 695, f"Patient: {patient_first_name}, {patient_last_name.upper()}")
+    # get the duration of the conversation in 00d 00h 00m format
+    hh, mm = divmod((conversation_end_time - conversation_start_time).seconds / 60, 60)
+    c.drawString(
+        50,
+        680,
+        f"Conversation Date: {conversation_start_time.strftime('%B %d, %Y %I:%M %p')} "
+        f"- {conversation_end_time.strftime('%I:%M %p')} ({int(hh)}h {int(mm)}m)",
+    )
 
     # Vertical position for content
-    y_position = 685
+    y_position = 665
 
     # Define paragraph styles
     styles = getSampleStyleSheet()

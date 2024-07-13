@@ -10,11 +10,8 @@ What it does:
 
 Output: A summary of the conversation session, the bytes of the PDF report."""
 
-import os
-import typing
-
 from reco_analysis.data_model import data_models
-from reco_analysis.summarizer_app import report_maker, summarizer_engine
+from reco_analysis.summarizer_app import post_office, report_maker, summarizer_engine
 
 
 def summarize_conversation(
@@ -42,27 +39,39 @@ def summarize_conversation(
     if not patient_transcript:
         raise ValueError("No transcript found for the conversation session.")
 
-    # Summarize the conversation transcript
-    summary, response_message = summarizer_engine.summarize(
-        patient_transcript=patient_transcript,
-        model=model,
-    )
+    if not conversation_session.summary:
+        # Summarize the conversation transcript
+        summary, response_message = summarizer_engine.summarize(
+            patient_transcript=patient_transcript,
+            model=model,
+        )
+        # Save the summary and response metadata to the database
+        conversation_session.save_summary(
+            summary,
+            response_message,
+            session=data_models.get_session(),
+        )
+    else:
+        summary = conversation_session.transcript_summary
 
-    # Create the PDF report
+    # Create the PDF report -- pdf_report is a bytes object
     pdf_report = report_maker.create_patient_report(
         summary_data=summary,
         transcript=patient_transcript,
     )
 
-    # Save the summary and response metadata to the database
-    conversation_session.save_summary(summary, response_message)
-
     # TODO: Email the summary to the HCP
+    patient = conversation_session.patient
+    if hcp := patient.healthcare_provider:
+        post_office.email_report(pdf_report, hcp, patient)
+        pass
 
-    return pdf_report
+    breakpoint()
+
+    # return pdf_report
 
 
 # test
 if __name__ == "__main__":
-    conversation_session_id = "fda7e5bb-7a4f-4f8d-a822-4cd520064243"
+    conversation_session_id = "489a8c74-c092-4ebe-bb55-273cf536bc86"
     summarize_conversation(conversation_session_id)

@@ -252,6 +252,7 @@ def reset_chat():
     st.empty()
     st.rerun()
 
+
 def export_conversation_history(agent):
     """
     Export the conversation history to a text file for further analysis.
@@ -302,12 +303,6 @@ def main():
         # Create a button to stop the conversation
         conversation_flow_button = st.sidebar.empty()
 
-        # Display initial doctor's message if not already shown
-        if st.session_state.turn == "Doctor":
-            initial_response = agent.generate_response()
-            st.session_state.turn = "Patient"  # After the doctor speaks, it's the patient's turn
-            stream_response("Doctor", initial_response)
-
         # Allow the user to end the conversation
         if conversation_flow_button.button(
             "End Conversation",
@@ -316,6 +311,12 @@ def main():
             disabled=st.session_state.conversation_ended,
         ):
             end_conversation(agent, session)
+        
+        # Display initial doctor's message if not already shown
+        if st.session_state.turn == "Doctor":
+            initial_response = agent.generate_response()
+            st.session_state.turn = "Patient"  # After the doctor speaks, it's the patient's turn
+            stream_response("Doctor", initial_response)
 
         # Accept user input and process the conversation flow
         if not st.session_state.conversation_ended:

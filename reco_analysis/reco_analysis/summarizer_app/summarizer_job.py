@@ -64,11 +64,8 @@ def summarize_conversation(
     patient = conversation_session.patient
     if hcp := patient.healthcare_provider:
         post_office.email_report(pdf_report, hcp, patient)
-        pass
 
-    breakpoint()
-
-    # return pdf_report
+    return pdf_report
 
 
 # test

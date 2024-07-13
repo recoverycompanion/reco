@@ -268,7 +268,7 @@ class ConversationSession(Base):
             "summary": summary.to_dict(),
             "response_metadata": response_message.response_metadata,
         }
-        self.session = json.dumps(to_save)
+        self.summary = json.dumps(to_save)
         session.commit()
 
     @property

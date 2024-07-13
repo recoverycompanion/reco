@@ -24,7 +24,6 @@ END_TERMS = {
     "peace out",
     "all the best",
     "best regards",
-    "thanks",
     "good night",
     "see ya",
     "take it easy",

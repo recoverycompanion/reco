@@ -197,7 +197,7 @@ def display_chat_history(agent):
 
     Args:
         agent (DialogueAgent): The dialogue agent object.
-    """        
+    """
     for message in agent.memory.messages:
         role, content = message.name, message.content
         with st.chat_message(role, avatar=get_icon(role)):
@@ -213,56 +213,16 @@ def handle_user_input(agent, prompt: str | None):
         prompt (str | None): The output from streamlit chat_input component.
     """
     if prompt:
-        if st.session_state.turn == "Patient":
-            # Add user message to the agent's memory and adjust's the agent's con
-            agent.receive(prompt)
-            st.write(f"Debug messages: {agent.memory.messages}")
-            st.write(f"Debug last doctor and patient message: {agent.get_last_doctor_patient_messages()}")
-            st.write(f"Debug conversation end: {agent.end_conversation}")
-            with st.chat_message("Patient", avatar=get_icon("Patient")):
-                st.markdown(prompt)
-            st.session_state.turn = "Doctor"  # Next turn is for the doctor
-
-            # Check if a conversation end is detected and confirm
-            if agent.end_conversation:
-                confirm_conversation_end(agent)
-            else:
-                # Generate and display doctor's response (including adding to memory)
-                response = agent.generate_response()  # Generate the response
-                stream_response("Doctor", response)
-
-            st.session_state.turn = "Patient"  # Next turn is for the patient
-
-
-def confirm_conversation_end(agent):
-    """
-    Confirms whether the patient wants to end the conversation or continue.
-
-    Args:
-        agent (DialogueAgent): The dialogue agent managing the conversation.
-    """
-    # Have the agent send a message confirming whether the patient wants to end the conversation
-    message = "It looks like this conversation is coming to a close. Would you like to end the conversation?"
-    agent.send(message)
-    stream_response("Doctor", message)
-
-    # Create a container for the buttons
-    # TODO: MAKE SURE CHAT IS DISABLED AFTER CLICKING YES
-    with st.container():
-        if st.button("Yes"):
-            agent.receive("Yes")
-            end_conversation(agent, session)
-
-        if st.button("No"):
-            agent.receive("No")
-            agent.end_conversation = False
-            st.session_state.conversation_ended = False
-
-            # Generate and display doctor's response (including adding to memory)
-            response = agent.generate_response()
-            stream_response("Doctor", response)
-            st.session_state.turn = "Patient"
-
+        # Add user message to the agent's memory and adjust's the agent's con
+        agent.receive(prompt)
+        with st.chat_message("Patient", avatar=get_icon("Patient")):
+            st.markdown(prompt)
+        st.session_state.turn = "Doctor"  # Next turn is for the doctor
+        
+        # Generate and display doctor's response (including adding to memory)
+        response = agent.generate_response()  # Generate the response
+        stream_response("Doctor", response)
+        st.session_state.turn = "Patient"  # Next turn is for the patient
 
 def end_conversation(agent: DialogueAgent, session):
     """
@@ -271,13 +231,13 @@ def end_conversation(agent: DialogueAgent, session):
     Args:
         agent (DialogueAgent): The dialogue agent managing the conversation.
         session (Session): The SQLAlchemy session object.
-    """
+    """    
     st.session_state.conversation_ended = True
+    agent.end_conversation = True
     convo_session: data_models.ConversationSession = (
         data_models.ConversationSession.get_by_id(agent.session_id, session)
     )
     convo_session.mark_as_completed(session)
-    st.write("Thank you for using the RECO Consultation tool. Goodbye!")
 
 
 def reset_chat():
@@ -290,7 +250,7 @@ def reset_chat():
     del st.session_state.agent
     st.session_state.conversation_ended = False
     st.empty()
-
+    st.rerun()
 
 def export_conversation_history(agent):
     """
@@ -348,24 +308,30 @@ def main():
             st.session_state.turn = "Patient"  # After the doctor speaks, it's the patient's turn
             stream_response("Doctor", initial_response)
 
+        # Allow the user to end the conversation
+        if conversation_flow_button.button(
+            "End Conversation",
+            type="primary",
+            key="end_conversation",
+            disabled=st.session_state.conversation_ended,
+        ):
+            end_conversation(agent, session)
+
         # Accept user input and process the conversation flow
         if not st.session_state.conversation_ended:
             prompt = st.chat_input(
                 "Enter your message:", disabled=st.session_state.conversation_ended
-            )
+            )    
             handle_user_input(agent, prompt)
-            if conversation_flow_button.button(
-                "End Conversation",
-                type="primary",
-                key="end_conversation",
-                disabled=st.session_state.conversation_ended,
-            ):
-                end_conversation(agent, session)
 
-        elif conversation_flow_button.button(
-                "New Conversation", key="new_conversation", type="secondary"
-            ):
-                reset_chat()
+        # End the conversation if the patient confirms or conversation_flow_button is clicked
+        else:
+            st.write("Thank you for using the RECO Consultation tool. Goodbye")
+            if conversation_flow_button.button(
+                    "New Conversation", key="new_conversation", type="secondary"
+                ):
+                    reset_chat()
+
     else:
         # Display a warning if the user is not authenticated
         if authentication_status == False:

@@ -51,9 +51,7 @@ Notes:
 """
 
 import json
-import os
 import typing
-import uuid
 
 from dotenv import load_dotenv
 from langchain.prompts import ChatPromptTemplate

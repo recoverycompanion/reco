@@ -1,7 +1,10 @@
+import json
 import os
+import typing
 import uuid
 
 from dotenv import load_dotenv
+from langchain_core.messages import BaseMessage
 from sqlalchemy import (
     Boolean,
     Column,
@@ -18,10 +21,12 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
 
+from reco_analysis.summarizer_app import data_type as summarizer_data_type
+
 env_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(env_file_path)
 
-ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "development"
+ENVIRONMENT = os.getenv("POSTGRES_DB_ENVIRONMENT") or "DEV"
 if ENVIRONMENT not in ["DEV", "PROD"]:
     raise ValueError("POSTGRES_DB_ENVIRONMENT must be either 'DEV' or 'PROD'")
 
@@ -245,6 +250,48 @@ class ConversationSession(Base):
         self.completed = True
         session.commit()
 
+    def get_transcript(self) -> list[str]:
+        ret = []
+        for message in self.messages:
+            message = typing.cast(Message, message)
+            ret.append(message.as_transcript_line())
+        return ret
+
+    def save_summary(
+        self,
+        summary: summarizer_data_type.TranscriptSummary,
+        response_message: BaseMessage,
+        session: Session,
+    ) -> None:
+        """Save the summary and response message to the database."""
+        to_save = {
+            "summary": summary.to_dict(),
+            "response_metadata": response_message.response_metadata,
+        }
+        self.summary = json.dumps(to_save)
+        session.commit()
+
+    @property
+    def transcript_summary(self) -> summarizer_data_type.TranscriptSummary:
+        """Get the transcript summary from the session."""
+        if not self.summary:
+            raise ValueError("Summary not available")
+        try:
+            transcript_summary_dict = json.loads(self.summary)["summary"]
+            return summarizer_data_type.TranscriptSummary.from_dict(transcript_summary_dict)
+        except KeyError:
+            raise ValueError("Summary not available")
+
+    @property
+    def response_metadata(self) -> dict:
+        """Get the response metadata from the session."""
+        if not self.session:
+            raise ValueError("Response metadata not available")
+        try:
+            return json.loads(self.session)["response_metadata"]
+        except KeyError:
+            raise ValueError("Response metadata not available")
+
 
 class Message(Base):
     __tablename__ = "message_store"
@@ -260,6 +307,28 @@ class Message(Base):
 
     def __repr__(self):
         return f"Message(session_id='{self.session_id}', message='{self.message}', timestamp='{self.timestamp}')"
+
+    def as_transcript_line(self) -> str:
+        """Convert a message to a line in a transcript."""
+
+        message_dict = json.loads(self.message)
+        message_type = message_dict.get("type", None)
+        message_data = message_dict.get("data", None)
+
+        if not message_type or not message_data:
+            raise ValueError("Invalid message format")
+
+        if message_type == "ai":
+            role = "Doctor"
+        elif message_type == "human":
+            role = "Patient"
+        else:
+            role = "Unknown"
+
+        if content := message_data.get("content", None):
+            return f"{role}: {content}"
+
+        raise ValueError("Invalid message format")
 
 
 def create_tables(engine: Engine) -> None:

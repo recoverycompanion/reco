@@ -234,7 +234,8 @@ class DialogueAgent:
         Detects the end of the conversation based on the last doctor and patient messages.
         """
         last_doctor_message, last_patient_message = self.get_last_doctor_patient_messages()
-        self.end_conversation = detect_end(doctor_input=last_doctor_message, patient_input=last_patient_message)
+        if last_doctor_message and last_patient_message:
+            self.end_conversation = detect_end(doctor_input=last_doctor_message, patient_input=last_patient_message)
 
     def generate_response(self) -> str:
         """

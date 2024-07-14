@@ -47,7 +47,6 @@ Notes:
 - Ensure environment variables, especially API keys, are set up using a `.env` file.
 - Define system messages and AI guidance in `prompts.py`.
 - This code is typically copied from `notebooks/chatbot.ipynb` to `reco_analysis/reco_analysis/chatbot.py`.
-
 """
 
 import json
@@ -77,6 +76,7 @@ from reco_analysis.chatbot.prompts import (
     system_message_doctor,
 )
 from reco_analysis.data_model import data_models
+from reco_analysis.end_detector.end_detector import detect_end
 
 session = data_models.get_session()
 
@@ -141,6 +141,7 @@ class DialogueAgent:
         system_message: typing.Optional[str] = system_message_doctor,
         model: typing.Optional[ChatOpenAI] = model,
         session_id: typing.Optional[str] = None,
+        end_detection: typing.Optional[bool] = False
     ) -> None:
         """
         Initialize the DialogueAgent with a name, system message, guidance after each run of the chat,
@@ -152,9 +153,11 @@ class DialogueAgent:
             model (ChatOpenAI): The language model to use for generating responses.
             patient_id (str, optional): The unique patient ID for the conversation. Defaults to None.
             session_id (str, optional): The unique session ID for the conversation. Defaults to None. If None, a new session ID will be generated. If a session ID is provided, the conversation history will be loaded from the session store (if available)
+            end_detection (bool, optional): Whether to detect the end of the conversation based on the last doctor and patient messages. Defaults to False.
         """
         self.system_message = system_message
         self.model = model
+        self.end_detection = end_detection
 
         # Set the patient ID
         self.patient: data_models.Patient = data_models.Patient.get_by_id(patient_id, session)
@@ -201,11 +204,39 @@ class DialogueAgent:
         # Prepare the AI instruction (this acts as guidance for the agent after each run of the chat)
         self.ai_instruct = ai_guidance_doctor if self.role == "Doctor" else ai_guidance_patient
 
+        # Initialize end of conversation flag
+        self.end_conversation = False
+
     def reset(self) -> None:
         """
         Resets the conversation history in memory
         """
         self.memory.clear()
+        self.end_conversation = False
+
+    def get_last_doctor_patient_messages(self) -> typing.Tuple[str, str]:
+        """
+        Retrieves the last doctor and patient messages from the conversation history.
+        
+        Returns:
+            Tuple[str, str]: A tuple containing the last doctor and patient messages.
+        """
+        last_doctor_message = None
+        last_patient_message = None
+
+        if len(self.memory.messages) >= 2 and self.memory.messages[-1].name == 'Patient' and self.memory.messages[-2].name == 'Doctor':
+            last_doctor_message = self.memory.messages[-2].content
+            last_patient_message = self.memory.messages[-1].content
+
+        return last_doctor_message, last_patient_message
+    
+    def detect_and_handle_end(self) -> None:
+        """
+        Detects the end of the conversation based on the last doctor and patient messages.
+        """
+        last_doctor_message, last_patient_message = self.get_last_doctor_patient_messages()
+        if last_doctor_message and last_patient_message:
+            self.end_conversation = detect_end(doctor_input=last_doctor_message, patient_input=last_patient_message)
 
     def generate_response(self) -> str:
         """
@@ -247,6 +278,10 @@ class DialogueAgent:
         """
         # Save the user input to the conversation memory
         self.memory.add_message(HumanMessage(content=message, name=self.human_role))
+
+        # Detect end of conversation if the role is Doctor
+        if self.end_detection:
+            self.detect_and_handle_end() if self.role == 'Doctor' else None
 
     def get_history(self) -> typing.List[str]:
         """

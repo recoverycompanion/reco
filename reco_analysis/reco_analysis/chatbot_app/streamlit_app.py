@@ -1,31 +1,3 @@
-"""
-streamlit_app.py
-
-This module defines a Streamlit application for the RECO Consultation chatbot.
-The application simulates a conversation between a virtual doctor and a patient, using the `DialogueAgent` class to manage the dialogue flow and generate responses.
-
-Functions:
-----------
-- stream_response(role, response_text):
-    Streams the response text word by word with a slight delay to simulate typing.
-
-    Args:
-        role (str): The role of the speaker ("Doctor" or "Patient").
-        response_text (str): The full response text to stream.
-
-- main():
-    Sets up and runs the Streamlit interface for the chatbot, handling the interaction flow and session state.
-    - Initializes the `DialogueAgent` and manages session state.
-    - Displays chat history and handles user input.
-    - Generates responses based on the conversation flow.
-    - Allows the user to end the conversation and save the chat history to a file.
-
-Usage:
-------
-To run this Streamlit application, execute the following command in the terminal:
-    streamlit run streamlit_app.py
-"""
-
 import time
 import typing
 from pathlib import Path
@@ -120,6 +92,75 @@ def setup_authenticator() -> (
     return authenticator, name, authentication_status, patient_username, patient
 
 
+def sign_up_new_patient():
+    """
+    Sign up a new patient by entering the required information.
+
+    Returns:
+        None
+    """
+    st.write("Sign up as a new patient by entering the following information:")
+    username = st.text_input("Username")
+    first_name = st.text_input("First Name")
+    last_name = st.text_input("Last Name")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    st.write(
+        "**Disclaimer**: RECO is a research project and not a real medical service, "
+        "and because it's based on Generative AI, it can sometimes provide incorrect "
+        "or harmful information."
+        "Any advice given by the chatbot is not a substitute for professional medical advice. "
+        "Please do not enter any sensitive personal information. As the data you enter may be used for research purposes. "
+        "If you have a medical emergency, please call 911.\n\n"
+        "By signing up, you understand and agree to these terms."
+    )
+
+    error_placeholder = st.empty()
+    if st.button("Sign up"):
+        if not all([username, first_name, last_name, email, password]):
+            error_placeholder.error("Please fill out all fields")
+        else:
+            try:
+                new_patient = data_models.Patient.new_patient(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    password=password,
+                    session=session,
+                )
+                error_placeholder.success(
+                    f"New patient account created for {new_patient.first_name} with username {new_patient.username}!"
+                )
+            except ValueError as e:
+                # likely a duplicate username
+                error_placeholder.error(f"Error: {e.args[0]}")
+
+
+def initialize_agent(patient: data_models.Patient) -> DialogueAgent:
+    """
+    Initialize the DialogueAgent for the given patient.
+
+    Args:
+        patient (data_models.Patient): The patient object.
+
+    Returns:
+        DialogueAgent: The initialized DialogueAgent object.
+    """
+    latest_conversation = patient.get_latest_conversation_session()
+    session_id = None if latest_conversation is None or latest_conversation.completed else latest_conversation.id
+    agent = DialogueAgent(
+        role="Doctor",
+        patient_id=patient.id,
+        session_id=session_id,
+    )
+    latest_message_role = agent.get_latest_message_role()
+    st.session_state.turn = "Doctor" if latest_message_role is None or latest_message_role == "Patient" else "Patient"
+    st.session_state.conversation_ended = False
+    return agent
+
+
 def get_icon(role):
     """
     Get the icon for the speaker based on their role.
@@ -157,8 +198,8 @@ def display_chat_history(agent):
     Args:
         agent (DialogueAgent): The dialogue agent object.
     """
-    for message in agent.get_history():
-        role, content = message.split(": ", 1)  # Split role and message content
+    for message in agent.memory.messages:
+        role, content = message.name, message.content
         with st.chat_message(role, avatar=get_icon(role)):
             st.markdown(content)
 
@@ -172,22 +213,66 @@ def handle_user_input(agent, prompt: str | None):
         prompt (str | None): The output from streamlit chat_input component.
     """
     if prompt:
-        if st.session_state.turn == "Patient":
-            # Add user message to the agent's memory
-            agent.receive(prompt)
-            with st.chat_message("Patient", avatar=get_icon("Patient")):
-                st.markdown(prompt)
-            st.session_state.turn = "Doctor"  # Next turn is for the doctor
+        # Add user message to the agent's memory and adjust's the agent's con
+        agent.receive(prompt)
+        with st.chat_message("Patient", avatar=get_icon("Patient")):
+            st.markdown(prompt)
+        st.session_state.turn = "Doctor"  # Next turn is for the doctor
+        
+        # Generate and display doctor's response (including adding to memory)
+        response = agent.generate_response()  # Generate the response
+        stream_response("Doctor", response)
+        st.session_state.turn = "Patient"  # Next turn is for the patient
 
-            # Generate and display doctor's response (including adding to memory)
-            response = agent.generate_response()  # Generate the response
-            stream_response("Doctor", response)
+def end_conversation(agent: DialogueAgent, session):
+    """
+    Ends the conversation and marks the session as completed.
 
-            st.session_state.turn = "Patient"  # Next turn is for the patient
+    Args:
+        agent (DialogueAgent): The dialogue agent managing the conversation.
+        session (Session): The SQLAlchemy session object.
+    """    
+    st.session_state.conversation_ended = True
+    agent.end_conversation = True
+    convo_session: data_models.ConversationSession = (
+        data_models.ConversationSession.get_by_id(agent.session_id, session)
+    )
+    convo_session.mark_as_completed(session)
+
+
+def reset_chat():
+    """
+    Reset the chat by clearing the session state and deleting the agent.
+
+    Returns:
+        None
+    """
+    del st.session_state.agent
+    st.session_state.conversation_ended = False
+    st.empty()
+    st.rerun()
+
+
+def export_conversation_history(agent):
+    """
+    Export the conversation history to a text file for further analysis.
+
+    Args:
+        agent (DialogueAgent): The dialogue agent object.
+    """
+    conversation_history_dir = Path(__file__).parent.parent.parent / "data/streamlit_transcripts"
+    with open(
+        f"{conversation_history_dir}/{agent.session_id}_conversation_history.txt", "w"
+    ) as file:
+        for message in agent.get_history():
+            file.write(message + "\n")
 
 
 def main():
-
+    """
+    Main function to set up and run the Streamlit interface for the chatbot,
+    handling the interaction flow and session state.
+    """
     # Set the page title
     st.set_page_config(page_title="RECO Consultation Tool", page_icon=":hearts:")
 
@@ -208,24 +293,7 @@ def main():
 
         # Initialize session state for Streamlit
         if "agent" not in st.session_state:
-            latest_conversation = patient.get_latest_conversation_session()
-
-            if latest_conversation is None or latest_conversation.completed:
-                session_id = None
-            else:
-                session_id = latest_conversation.id
-
-            st.session_state.agent = DialogueAgent(
-                patient_id=patient.id,
-                session_id=session_id,
-            )
-            # This associates the patient_id with the conversation history
-            latest_message_role = st.session_state.agent.get_latest_message_role()
-            if latest_message_role is None or latest_message_role == "Patient":
-                st.session_state.turn = "Doctor"  # Start with the doctor's turn
-            else:
-                st.session_state.turn = "Patient"
-            st.session_state.conversation_ended = False
+            st.session_state.agent = initialize_agent(patient)
 
         agent: DialogueAgent = st.session_state.agent
 
@@ -235,6 +303,15 @@ def main():
         # Create a button to stop the conversation
         conversation_flow_button = st.sidebar.empty()
 
+        # Allow the user to end the conversation
+        if conversation_flow_button.button(
+            "End Conversation",
+            type="primary",
+            key="end_conversation",
+            disabled=st.session_state.conversation_ended,
+        ):
+            end_conversation(agent, session)
+        
         # Display initial doctor's message if not already shown
         if st.session_state.turn == "Doctor":
             initial_response = agent.generate_response()
@@ -245,37 +322,16 @@ def main():
         if not st.session_state.conversation_ended:
             prompt = st.chat_input(
                 "Enter your message:", disabled=st.session_state.conversation_ended
-            )
+            )    
             handle_user_input(agent, prompt)
 
+        # End the conversation if the patient confirms or conversation_flow_button is clicked
+        else:
+            st.write("Thank you for using the RECO Consultation tool. Goodbye")
             if conversation_flow_button.button(
-                "End Conversation",
-                type="primary",
-                key="end_conversation",
-                disabled=st.session_state.conversation_ended,
-            ):
-                st.session_state.conversation_ended = True
-                convo_session: data_models.ConversationSession = (
-                    data_models.ConversationSession.get_by_id(agent.session_id, session)
-                )
-                convo_session.mark_as_completed(session)
-
-                # Export the conversation history to a text file. Note this is a simple example which will need to be altered to link to the SQL database for future use.
-                conversation_history_dir = Path(__file__).parent.parent.parent / "data/interim"
-                # with open(f"../data/interim/{agent.session_id}_conversation_history.txt", "w") as file:
-                with open(
-                    f"{conversation_history_dir}/{agent.session_id}_conversation_history.txt", "w"
-                ) as file:
-                    for message in agent.get_history():
-                        file.write(message + "\n")
-
-        if st.session_state.conversation_ended:
-            st.write("Thank you for using the RECO Consultation tool. Goodbye!")
-            if conversation_flow_button.button(
-                "New Conversation", key="new_conversation", type="secondary"
-            ):
-                # delete agent to start a new conversation
-                del st.session_state.agent
+                    "New Conversation", key="new_conversation", type="secondary"
+                ):
+                    reset_chat()
 
     else:
         # Display a warning if the user is not authenticated
@@ -284,44 +340,7 @@ def main():
 
         # allow for new patient account sign up
         with st.popover("Sign up as a new patient"):
-            # use a pop-up to get the patient's information
-            st.write("Sign up as a new patient by entering the following information:")
-            username = st.text_input("Username")
-            first_name = st.text_input("First Name")
-            last_name = st.text_input("Last Name")
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-
-            st.write(
-                "**Disclaimer**: RECO is a research project and not a real medical service, "
-                "and because it's based on Generative AI, it can sometimes provide incorrect "
-                "or harmful information."
-                "Any advice given by the chatbot is not a substitute for professional medical advice. "
-                "Please do not enter any sensitive personal information. As the data you enter may be used for research purposes. "
-                "If you have a medical emergency, please call 911.\n\n"
-                "By signing up, you understand and agree to these terms."
-            )
-
-            error_placeholder = st.empty()
-            if st.button("Sign up"):
-                if not all([username, first_name, last_name, email, password]):
-                    error_placeholder.error("Please fill out all fields")
-                else:
-                    try:
-                        new_patient = data_models.Patient.new_patient(
-                            username=username,
-                            first_name=first_name,
-                            last_name=last_name,
-                            email=email,
-                            password=password,
-                            session=session,
-                        )
-                        error_placeholder.success(
-                            f"New patient account created for {new_patient.first_name} with username {new_patient.username}!"
-                        )
-                    except ValueError as e:
-                        # likely a duplicate username
-                        error_placeholder.error(f"Error: {e.args[0]}")
+            sign_up_new_patient()
 
 
 if __name__ == "__main__":

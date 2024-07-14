@@ -143,6 +143,7 @@ class DialogueAgent:
         system_message: typing.Optional[str] = system_message_doctor,
         model: typing.Optional[ChatOpenAI] = model,
         session_id: typing.Optional[str] = None,
+        end_detection: typing.Optional[bool] = False
     ) -> None:
         """
         Initialize the DialogueAgent with a name, system message, guidance after each run of the chat,
@@ -154,9 +155,11 @@ class DialogueAgent:
             model (ChatOpenAI): The language model to use for generating responses.
             patient_id (str, optional): The unique patient ID for the conversation. Defaults to None.
             session_id (str, optional): The unique session ID for the conversation. Defaults to None. If None, a new session ID will be generated. If a session ID is provided, the conversation history will be loaded from the session store (if available)
+            end_detection (bool, optional): Whether to detect the end of the conversation based on the last doctor and patient messages. Defaults to False.
         """
         self.system_message = system_message
         self.model = model
+        self.end_detection = end_detection
 
         # Set the patient ID
         self.patient: data_models.Patient = data_models.Patient.get_by_id(patient_id, session)
@@ -256,9 +259,6 @@ class DialogueAgent:
         # Save the AI's response to the memory
         self.send(response)
 
-        # Detect and handle the end of the conversation if the role is Patient
-        self.detect_and_handle_end() if self.role == 'Patient' else None
-
         return response
 
     def send(self, message: str) -> None:
@@ -282,7 +282,8 @@ class DialogueAgent:
         self.memory.add_message(HumanMessage(content=message, name=self.human_role))
 
         # Detect end of conversation if the role is Doctor
-        self.detect_and_handle_end() if self.role == 'Doctor' else None
+        if self.end_detection:
+            self.detect_and_handle_end() if self.role == 'Doctor' else None
 
     def get_history(self) -> typing.List[str]:
         """

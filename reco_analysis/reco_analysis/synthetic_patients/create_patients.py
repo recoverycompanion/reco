@@ -7,14 +7,14 @@ from langchain.prompts import PromptTemplate
 from reco_analysis.synthetic_patients.utils import clean_chief_complaint, calculate_demographics, generate_top_last_names, get_patients_to_exclude
 
 # Define global variables for file paths
-RAW_MIMIC_FILE = './data/raw/mimic/mimic_ed_hf_240609_1741.csv'
-CLEANED_MIMIC_FILE = './data/processed/mimic/mimic_ed_hf_240609_1741_cleaned.csv'
-LAST_NAMES_FILE = './data/raw/names/last_raceNameProbs.csv'
-PROCESSED_LAST_NAMES_FILE = './data/processed/names/top_100_last_names_by_value.csv'
-MALE_FIRST_NAMES_FILE = './data/raw/names/Male_Names.csv'
-FEMALE_FIRST_NAMES_FILE = './data/raw/names/Female_Names.csv'
+RAW_MIMIC_FILE = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
+CLEANED_MIMIC_FILE = '../data/processed/mimic/mimic_ed_hf_240609_1741_cleaned.csv'
+LAST_NAMES_FILE = '../data/raw/names/last_raceNameProbs.csv'
+PROCESSED_LAST_NAMES_FILE = '../data/processed/names/top_100_last_names_by_value.csv'
+MALE_FIRST_NAMES_FILE = '../data/raw/names/Male_Names.csv'
+FEMALE_FIRST_NAMES_FILE = '../data/raw/names/Female_Names.csv'
 PATIENTS_EXCLUDE_FILE = ''
-OUTPUT_PATIENTS_FILE = './data/patients/patients_2.0_test.json'
+OUTPUT_PATIENTS_FILE = '../data/patients/patients_2.0_test.json'
 
 # Define the prompt text template
 PROMPT_TEXT = """
@@ -51,7 +51,7 @@ def create_prompt_template(prompt_text=PROMPT_TEXT):
     """
     return PromptTemplate(
         input_variables=["name", "gender", "age", "race", "marital_status", "chiefcomplaint", "primary_patient_feeling", "all_meds", "vitals_temperature", "vitals_heartrate", "vitals_resprate", "vitals_o2sat", "vitals_sbp", "vitals_dbp", "weight", "vitals_pain"],
-        template=PROMPT_TEXT,
+        template=prompt_text,
     )
 
 def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_first_names_file, prompt_text=PROMPT_TEXT):
@@ -76,15 +76,15 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
         random_number = np.random.choice(20)
         return patient_feelings[0] if random_number < 15 else patient_feelings[random_number - 14]
 
-    def _get_name_column(race):
-        race_map = {
+    def _get_last_name_column(race):
+        last_name_map = {
             'White': 'whi',
             'Black/African American': 'bla',
             'Hispanic/Latino': 'his',
             'Asian': 'asi',
             'Native/Indigenous': 'oth'
         }
-        return race_map.get(race, 'oth')
+        return last_name_map.get(race, 'oth')
 
     def _get_first_name_column(race):
         first_name_map = {
@@ -100,11 +100,11 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
         last_names_df = pd.read_csv(last_names_file)
         first_names_df = pd.read_csv(male_first_names_file if gender == "Male" else female_first_names_file)
         
-        race_col = _get_name_column(race)
+        last_name_col = _get_last_name_column(race)
         first_name_col = _get_first_name_column(race)
 
         last_names = last_names_df['name'].tolist()
-        last_name_prob = last_names_df[race_col].tolist()
+        last_name_prob = last_names_df[last_name_col].tolist()
         chosen_last_name = random.choices(last_names, weights=last_name_prob, k=1)[0]
 
         first_names = first_names_df['firstname'].tolist()
@@ -153,7 +153,13 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
 
     return patient_prompt
 
-def create_synthetic_patients(n, cleaned_mimic_file_path, male_first_names_file, female_first_names_file, last_names_file, patients_to_exclude=[], prompt_text=PROMPT_TEXT):
+def create_patients(n,
+                    cleaned_mimic_file_path=CLEANED_MIMIC_FILE,
+                    male_first_names_file=MALE_FIRST_NAMES_FILE,
+                    female_first_names_file=FEMALE_FIRST_NAMES_FILE,
+                    last_names_file=PROCESSED_LAST_NAMES_FILE,
+                    patients_to_exclude=[],
+                    prompt_text=PROMPT_TEXT):
     """
     Creates synthetic patients using demographic data and a list of names.
 
@@ -204,20 +210,29 @@ def create_synthetic_patients(n, cleaned_mimic_file_path, male_first_names_file,
 
     return patients
 
-# Usage
+def export_synthetic_patients(patients, output_file_path=OUTPUT_PATIENTS_FILE):
+    """
+    Exports the synthetic patients to a JSON file.
+
+    Args:
+        patients (dict): A dictionary of synthetic patients.
+        output_file_path (str): The path to the output JSON file.
+    """
+    with open(output_file_path, 'w') as json_file:
+        json.dump(patients, json_file)
+
 if __name__ == "__main__":    
-    # # Step 1: Clean Chief Complaint Data
-    # clean_chief_complaint(RAW_MIMIC_FILE, CLEANED_MIMIC_FILE)
+    # Step 1: Clean Chief Complaint Data
+    clean_chief_complaint(RAW_MIMIC_FILE, CLEANED_MIMIC_FILE)
 
-    # # Step 3: Generate Top Last Names
-    # generate_top_last_names(LAST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE)
+    # Step 2: Generate Top Last Names
+    generate_top_last_names(LAST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE)
 
-    # # Step 4: Get Patients to Exclude
-    # patients_to_exclude = get_patients_to_exclude(PATIENTS_EXCLUDE_FILE)
+    # Step 3: Get Patients to Exclude
+    patients_to_exclude = get_patients_to_exclude(PATIENTS_EXCLUDE_FILE)
 
-    # Step 5: Create Synthetic Patients
-    synthetic_patients = create_synthetic_patients(20, CLEANED_MIMIC_FILE, MALE_FIRST_NAMES_FILE, FEMALE_FIRST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE, patients_to_exclude=[])
+    # Step 4: Create Synthetic Patients
+    synthetic_patients = create_patients(20, CLEANED_MIMIC_FILE, MALE_FIRST_NAMES_FILE, FEMALE_FIRST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE, patients_to_exclude)
 
-    # Step 6: Save Synthetic Patients
-    with open(OUTPUT_PATIENTS_FILE, 'w') as json_file:
-        json.dump(synthetic_patients, json_file)
+    # Step 5: Save Synthetic Patients
+    export_synthetic_patients(synthetic_patients, OUTPUT_PATIENTS_FILE)

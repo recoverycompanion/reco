@@ -175,7 +175,9 @@ class SummaryJudge:
 
         return eval
 
-    def evaluate_batch(self, entries: list[tuple[str, str, str | dict]]) -> pd.DataFrame:
+    def evaluate_batch(
+        self, entries: list[tuple[str, str | list[str], str | dict]]
+    ) -> pd.DataFrame:
         """Evaluate a batch of summaries.
 
         Args:

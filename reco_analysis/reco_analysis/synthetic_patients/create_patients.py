@@ -154,12 +154,12 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
     return patient_prompt
 
 def create_patients(n,
-                    cleaned_mimic_file_path=CLEANED_MIMIC_FILE,
-                    male_first_names_file=MALE_FIRST_NAMES_FILE,
-                    female_first_names_file=FEMALE_FIRST_NAMES_FILE,
-                    last_names_file=PROCESSED_LAST_NAMES_FILE,
+                    cleaned_mimic_file_path,
+                    male_first_names_file,
+                    female_first_names_file,
+                    last_names_file,
                     patients_to_exclude=[],
-                    prompt_text=PROMPT_TEXT):
+                    prompt_text=""):
     """
     Creates synthetic patients using demographic data and a list of names.
 
@@ -178,12 +178,13 @@ def create_patients(n,
     df = pd.read_csv(cleaned_mimic_file_path)
 
     patients = {}
+    selected_patient_ids = set(patients_to_exclude)
 
     demographics = calculate_demographics(cleaned_mimic_file_path, n)
 
     for pt_race, count in demographics.items():
         interim_df = df[df['race'] == pt_race].reset_index(drop=True)
-        filtered_df = interim_df[~interim_df['subject_id'].isin(patients_to_exclude)]
+        filtered_df = interim_df[~interim_df['subject_id'].isin(selected_patient_ids)]
         list_to_choose_from = filtered_df['stay_id'].tolist()
 
         for _ in range(count):
@@ -207,6 +208,7 @@ def create_patients(n,
             }
 
             patients[str(patient['id'])] = patient
+            selected_patient_ids.add(random_row['subject_id'])
 
     return patients
 

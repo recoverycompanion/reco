@@ -154,12 +154,12 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
     return patient_prompt
 
 def create_patients(n,
-                    cleaned_mimic_file_path,
-                    male_first_names_file,
-                    female_first_names_file,
-                    last_names_file,
+                    cleaned_mimic_file_path=CLEANED_MIMIC_FILE,
+                    male_first_names_file=MALE_FIRST_NAMES_FILE,
+                    female_first_names_file=FEMALE_FIRST_NAMES_FILE,
+                    last_names_file=PROCESSED_LAST_NAMES_FILE,
                     patients_to_exclude=[],
-                    prompt_text=""):
+                    prompt_text=PROMPT_TEXT):
     """
     Creates synthetic patients using demographic data and a list of names.
 

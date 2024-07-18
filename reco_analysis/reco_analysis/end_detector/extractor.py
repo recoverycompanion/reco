@@ -94,7 +94,7 @@ Use the following example of an Original Transcript, along with its associated F
 Provide the line number of the last line of the first round of conversation. Only provide the number, e.g., "35".
 """
 
-model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+model = ChatOpenAI(model_name="gpt-4o", temperature=0)
 
 def create_prompt_template() -> PromptTemplate:
     """
@@ -116,7 +116,6 @@ def create_chain() -> RunnableSerializable:
         RunnableSerializable: A LangChain chain for the transcript extractor.
     """
     prompt = create_prompt_template()
-    model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
     output_parser = StrOutputParser()
     chain = prompt | model | output_parser
     return chain
@@ -142,27 +141,50 @@ def enumerate_transcript(transcript_lines):
     Args:
         transcripts (dict): Dictionary of transcripts.
     """
-    return [f"{i}: {line}" for i, line in enumerate(transcript_lines)]
+    enumerated_lines = [f"{i}: {line}" for i, line in enumerate(transcript_lines)]
+    transcript_text = "\n".join(enumerated_lines)
+    return transcript_text
+
+def process_transcript(transcript, debug=False):
+    """
+    Process a single transcript to extract the first round of conversation.
+
+    Args:
+        transcript (str): The transcript to process.
+
+    Returns:
+        str: The processed transcript.
+    """
+    chain = create_chain()
+    enumerated_text = enumerate_transcript(transcript)
+    end_line_number = detect_first_conversation_end(chain, enumerated_text)
+    if debug:
+        print(f"DEBUG INFO: End of first conversation at line {end_line_number}")
+        print("-" * 150)
+        print(transcript[end_line_number])
+        print("-" * 150)
+    first_conversation = transcript[:end_line_number + 1]
+    return first_conversation
 
 def process_transcripts(transcripts):
     """
-    Process the dictionary of transcripts to extract the first round of conversation for each.
+    Process the dictionary of patients to extract the first round of conversation for each.
 
     Args:
-        transcripts (dict): Dictionary of transcripts.
+        transcripts (dict): Dictionary of patients. Must contain the following keys:
+            - id: The ID of the patient.
+            - name: The name of the patient.
+            - prompt: The prompt for the patient.
+            - chat_transcript: The chat transcript for the patient.
 
     Returns:
         dict: Dictionary with shortened conversations.
     """
-    chain = create_chain()
     processed_transcripts = {}
 
     for key, value in transcripts.items():
         transcript_lines = value['chat_transcript']
-        enumerated_lines = enumerate_transcript(transcript_lines)
-        transcript_text = "\n".join(enumerated_lines)
-        end_line_number = detect_first_conversation_end(chain, transcript_text)    
-        first_conversation = transcript_lines[:end_line_number + 1]
+        first_conversation = process_transcript(transcript_lines)
         processed_transcripts[key] = {
             "id": value['id'],
             "name": value['name'],

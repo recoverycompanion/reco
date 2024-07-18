@@ -1,3 +1,18 @@
+"""
+This script processes patient chat transcripts to identify and extract the first round of conversation
+between a Doctor and a Patient. It utilizes LangChain and OpenAI's language model to determine where 
+the first conversation ends based on specific dialogue cues.
+
+Functions:
+    - create_prompt_template: Generates a prompt template for the language model.
+    - create_chain: Constructs a LangChain chain for the transcript extractor.
+    - detect_first_conversation_end: Identifies the line number where the first conversation ends.
+    - enumerate_transcript: Enumerates transcript lines for easier processing.
+    - process_transcript: Processes a single transcript to extract the first round of conversation.
+    - process_transcripts: Processes multiple transcripts to extract the first conversation for each.
+    - load_transcripts: Loads transcripts from a JSON file.
+    - save_transcripts: Saves processed transcripts to a JSON file.
+"""
 import json
 import argparse
 from dotenv import load_dotenv
@@ -214,3 +229,24 @@ def save_transcripts(file_path: str, transcripts: dict):
     """
     with open(file_path, "w") as file:
         json.dump(transcripts, file, indent=4)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process patient chat transcripts to extract the first conversation.")
+    parser.add_argument("input_file", type=str, help="Path to the input JSON file containing patients and associated transcripts.")
+    parser.add_argument("transcript_field", type=str, default="chat_transcript_full", help="The key in the JSON file containing the chat transcript.")
+    parser.add_argument("output_file", type=str, help="Path to the output JSON file to save processed transcripts.")
+    args = parser.parse_args()
+
+    # Load the transcripts from the input file
+    transcripts = load_transcripts(args.input_file)
+
+    # Process the transcripts to extract the first round of conversation
+    processed_transcripts = process_transcripts(
+        patients_dict = args.input_file,
+        transcript_field = args.transcript_field
+    )
+
+    # Save the processed transcripts to the output file
+    save_transcripts(args.output_file, processed_transcripts)
+
+    print(f"Processed transcripts have been saved to {args.output_file}")

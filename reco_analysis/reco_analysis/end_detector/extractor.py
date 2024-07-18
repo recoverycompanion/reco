@@ -8,26 +8,32 @@ from langchain_openai import ChatOpenAI
 
 # Load environment variables
 load_dotenv("../.env")
+# Load environment variables
+load_dotenv("../.env")
 
-PROMPT_TEXT = PROMPT_TEXT = """
-You are an intelligent assistant tasked with identifying the line number where the first round of conversation ends in a transcript between a Doctor and a Patient. Follow these steps:
+PROMPT_TEXT = """
+You are an intelligent assistant tasked with identifying the line number where the first round of conversation ends in a transcript between a Doctor and a Patient.
 
-1. **Identify the first conversation's end:**
+You must only return a number.
+
+Follow these steps:
+1. **Identify the first conversation's end, if applicable:**
    - Look for a closing statement by the Doctor followed by a confirmation from the Patient. The last line of the first round should always be spoken by the Patient and end on a note indicating the conversation has reached a temporary conclusion.
    - Double-check that the last line of the first conversation does not contain a greeting or welcoming phrase typically used to start conversations.
-2. **Identify the second conversation's start:**
+2. **Identify the second conversation's start, if applicable:**
    - Usually indicated by the Doctor greeting the Patient again, e.g., "Hello [Patient name]". The first line of the second round is always spoken by the Doctor.
-3. **Double-check the transition:**
+3. **If there is a first conversation end and second conversation start, double-check the transition:**
    - Confirm that the end of the first conversation appears immediately before the start of the second conversation.
-4. **Output only the line number of the last line of the first conversation.**
+4. **Output a number:**:
+    - If there is no end to the first conversation, output 999.
+    - If the first conversation ends, output the line number of the last line of the first conversation.
 
 The transcript is provided below, surrounded by triple quotes:
 '''
 {transcript}
 '''
 
-Use the following example of an Original Transcript, along with its associated First Conversation End, Second Conversation Start and Expected Output to guide you in your task.
-
+Note: The example provided below applies only to cases where an end of the first conversation is identified.
 **Example: Original Transcript:**
 0: Doctor: Hello Kevin Morris, I'm here to check on how you're feeling today. Let's go over how you've been doing since your discharge.
 1: Patient: Um... I've been feeling a bit tired lately, Doctor. And my legs are still swollen.
@@ -68,18 +74,10 @@ Use the following example of an Original Transcript, along with its associated F
 36: Doctor: Hello, Kevin. I'm here to check on how you're feeling today. Can you tell me how you've been feeling since your discharge? Have you noticed any new or worsening symptoms?
 37: Patient: Um... I haven't had any new symptoms, Doctor. Just the usual tiredness and leg swelling.
 38: Doctor: Thank you for sharing that, Kevin. Have you experienced any shortness of breath, especially when walking around the house?
-39: Patient: Yes, Doctor, I do feel a bit winded when I walk around. It's been harder to move about lately.
-40: Doctor: Thank you for sharing that, Kevin. Have you had sudden shortness of breath that wakes you up at night, known as paroxysmal nocturnal dyspnea?
-41: Patient: No, Doctor, I haven't been waking up at night feeling short of breath. It's mostly during the day when I notice it more.
-42: Doctor: Thank you for clarifying, Kevin. Do you need to prop yourself up with pillows to breathe comfortably while lying down?
-43: Patient: No, Doctor, I don't need pillows to prop myself up at night. I usually sleep fine once I find a good position.
-44: Doctor: Thank you for clarifying that, Kevin. Have you noticed any swelling in your ankles or legs recently?
-45: Patient: Yes, Doctor, my legs have been quite swollen, especially in the evenings. It's uncomfortable to move around when they're like that.
-46: Doctor: Thank you for sharing that, Kevin. Are you experiencing a cough, especially at night?
-47: Patient: No, Doctor, I haven't been coughing much at night. It's mostly during the day if I do.
-48: Doctor: Thank you for sharing that, Kevin. Have you had any chest pain recently?
-49: Patient: No, Doctor, I haven't had any chest pain recently. It's mostly been the tiredness and leg swelling that bother me.
-50: Doctor: Based on our conversation, Kevin, it seems like you're mainly experiencing tiredness and leg swelling. Have you felt more tired than usual or experienced any sudden changes in your mental clarity?
+39: Patient: No, Doctor, I haven't been experiencing shortness of breath.
+40: Doctor: Thank you for sharing that, Kevin. Have you had any chest pain recently?
+41: Patient: No, Doctor, I haven't had any chest pain recently. It's mostly been the tiredness and leg swelling that bother me.
+42: Doctor: Based on our conversation, Kevin, it seems like you're mainly experiencing tiredness and leg swelling. Have you felt more tired than usual or experienced any sudden changes in your mental clarity?
 
 **Example: First Conversation End:**
 34: Doctor: Based on our conversation, Kevin, it seems you are mainly experiencing tiredness and leg swelling, and you are currently taking Furosemide, Spironolactone, and fish oil for your heart condition. Is there anything else you would like to share regarding your symptoms, vital signs, or medications?
@@ -90,11 +88,7 @@ Use the following example of an Original Transcript, along with its associated F
 
 **Example: Expected Output:**
 35
-
-Provide the line number of the last line of the first round of conversation. Only provide the number, e.g., "35".
 """
-
-model = ChatOpenAI(model_name="gpt-4o", temperature=0)
 
 def create_prompt_template() -> PromptTemplate:
     """
@@ -116,6 +110,7 @@ def create_chain() -> RunnableSerializable:
         RunnableSerializable: A LangChain chain for the transcript extractor.
     """
     prompt = create_prompt_template()
+    model = ChatOpenAI(model_name="gpt-4o", temperature=0)
     output_parser = StrOutputParser()
     chain = prompt | model | output_parser
     return chain
@@ -161,29 +156,33 @@ def process_transcript(transcript, debug=False):
     if debug:
         print(f"DEBUG INFO: End of first conversation at line {end_line_number}")
         print("-" * 150)
-        print(transcript[end_line_number])
+        if end_line_number != 999:
+            print(transcript[end_line_number])
         print("-" * 150)
-    first_conversation = transcript[:end_line_number + 1]
-    return first_conversation
+    if end_line_number == 999:
+        return transcript
+    else:
+        return transcript[:end_line_number + 1]
 
-def process_transcripts(transcripts):
+def process_transcripts(patients_dict, transcript_field='chat_transcript'):
     """
     Process the dictionary of patients to extract the first round of conversation for each.
 
     Args:
-        transcripts (dict): Dictionary of patients. Must contain the following keys:
+        patients_dict (dict): Dictionary of patients. Must contain the following keys:
             - id: The ID of the patient.
             - name: The name of the patient.
             - prompt: The prompt for the patient.
             - chat_transcript: The chat transcript for the patient.
+        transcript_field (str): The key in the patients_dict containing the chat transcript.
 
     Returns:
         dict: Dictionary with shortened conversations.
     """
     processed_transcripts = {}
 
-    for key, value in transcripts.items():
-        transcript_lines = value['chat_transcript']
+    for key, value in patients_dict.items():
+        transcript_lines = value[transcript_field]
         first_conversation = process_transcript(transcript_lines)
         processed_transcripts[key] = {
             "id": value['id'],
@@ -215,18 +214,3 @@ def save_transcripts(file_path: str, transcripts: dict):
     """
     with open(file_path, "w") as file:
         json.dump(transcripts, file, indent=4)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process chat transcripts to extract the first round of conversation.")
-    parser.add_argument("input_file", type=str, help="Path to the input JSON file containing chat transcripts.")
-    parser.add_argument("output_file", type=str, help="Path to the output JSON file to save processed transcripts.")
-    args = parser.parse_args()
-
-    transcripts = load_transcripts(args.input_file)
-
-    processed_transcripts = process_transcripts(transcripts)
-
-    save_transcripts(args.output_file, processed_transcripts)
-
-    print(f"Processed transcripts saved to {args.output_file}")

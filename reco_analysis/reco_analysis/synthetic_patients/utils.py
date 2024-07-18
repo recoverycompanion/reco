@@ -1,3 +1,7 @@
+"""
+This script contains utility functions for cleaning the chief complaint field in the MIMIC dataset, calculating demographic distributions for synthetic patient generation, generating the top 100 last names for different racial groups, and collecting a list of patients to exclude from synthetic generation.
+"""
+
 import pandas as pd
 import numpy as np
 import json

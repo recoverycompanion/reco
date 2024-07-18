@@ -1,3 +1,7 @@
+"""
+This script generates synthetic patient data using the MIMIC-ED dataset.
+It cleans chief complaint data, generates demographic distributions, assigns realistic names, and exports patients and associated prompts to a JSON file.
+"""
 import pandas as pd
 import numpy as np
 import random

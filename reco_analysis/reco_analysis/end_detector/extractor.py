@@ -23,8 +23,6 @@ from langchain_openai import ChatOpenAI
 
 # Load environment variables
 load_dotenv("../.env")
-# Load environment variables
-load_dotenv("../.env")
 
 PROMPT_TEXT = """
 You are an intelligent assistant tasked with identifying the line number where the first round of conversation ends in a transcript between a Doctor and a Patient.
@@ -125,7 +123,7 @@ def create_chain() -> RunnableSerializable:
         RunnableSerializable: A LangChain chain for the transcript extractor.
     """
     prompt = create_prompt_template()
-    model = ChatOpenAI(model_name="gpt-4o", temperature=0)
+    model = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
     output_parser = StrOutputParser()
     chain = prompt | model | output_parser
     return chain
@@ -179,7 +177,7 @@ def process_transcript(transcript, debug=False):
     else:
         return transcript[:end_line_number + 1]
 
-def process_transcripts(patients_dict, transcript_field='chat_transcript'):
+def process_transcripts(patients_dict, transcript_field='chat_transcript', debug=False):
     """
     Process the dictionary of patients to extract the first round of conversation for each.
 
@@ -198,7 +196,14 @@ def process_transcripts(patients_dict, transcript_field='chat_transcript'):
 
     for key, value in patients_dict.items():
         transcript_lines = value[transcript_field]
-        first_conversation = process_transcript(transcript_lines)
+        if debug:
+            print("\n")
+            print(f"Processing transcript for {value['name']}...")
+            print("=" * 150)
+            for i, line in enumerate(transcript_lines):
+                print(f"{i}: {line}")
+            print("\n")
+        first_conversation = process_transcript(transcript_lines, debug=debug)
         processed_transcripts[key] = {
             "id": value['id'],
             "name": value['name'],

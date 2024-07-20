@@ -17,6 +17,7 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: li
     Args:
         in_file_path: Path to the csv file.
         out_file_path: Path to the output csv file.
+        ccs_to_omit: List of chief complaints to omit.
     """
     def _clean_chief_complaint_string(s):
         if '"' in s:
@@ -31,13 +32,13 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: li
                     s = s.replace(cc, '')
         if s == '':
             s = "REMOVE_ROW"
-
         return s
+    
     df = pd.read_csv(in_file_path)
     df['chiefcomplaint'] = df['chiefcomplaint'].apply(_clean_chief_complaint_string)
     df = df[df['chiefcomplaint'] != 'REMOVE_ROW']
     df.to_csv(out_file_path, index=False)
-    
+
 def calculate_demographics(csv_file_path: str, records_to_generate: int):
     """
     Calculates demographic distributions for synthetic patient generation.

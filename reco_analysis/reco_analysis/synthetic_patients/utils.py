@@ -9,7 +9,8 @@ import json
 INPUT_FILE_PATH = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
 CLEANED_FILE_PATH = '../data/processed/mimic_ed_hf_240609_1741_cleaned.csv'
 
-def clean_chief_complaint(in_file_path: str, out_file_path: str):
+
+def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: list = ['Transfer', 'Abnormal labs', 'Meds refill']):
     """
     Clean the chief complaint field in the csv file.
 
@@ -17,11 +18,26 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str):
         in_file_path: Path to the csv file.
         out_file_path: Path to the output csv file.
     """
-    df = pd.read_csv(in_file_path)
-    df['chiefcomplaint'] = df['chiefcomplaint'].str.lower().str.strip()
-    df = df[df['chiefcomplaint'].notna()]
-    df.to_csv(out_file_path, index=False)
+    def _clean_chief_complaint_string(s):
+        if '"' in s:
+            s = s.replace('"', '')
+        for cc in ccs_to_omit:
+            if cc in s:
+                if ", " + cc in s:
+                    s = s.replace(', ' + cc, '')
+                if cc + ", " in s:
+                    s = s.replace(cc + ', ', '')
+                if cc in s:
+                    s = s.replace(cc, '')
+        if s == '':
+            s = "REMOVE_ROW"
 
+        return s
+    df = pd.read_csv(in_file_path)
+    df['chiefcomplaint'] = df['chiefcomplaint'].apply(_clean_chief_complaint_string)
+    df = df[df['chiefcomplaint'] != 'REMOVE_ROW']
+    df.to_csv(out_file_path, index=False)
+    
 def calculate_demographics(csv_file_path: str, records_to_generate: int):
     """
     Calculates demographic distributions for synthetic patient generation.

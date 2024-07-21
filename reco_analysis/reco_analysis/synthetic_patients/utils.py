@@ -9,7 +9,6 @@ import json
 INPUT_FILE_PATH = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
 CLEANED_FILE_PATH = '../data/processed/mimic_ed_hf_240609_1741_cleaned.csv'
 
-
 def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: list = ['Transfer', 'Abnormal labs', 'Meds refill']):
     """
     Clean the chief complaint field in the csv file.
@@ -38,6 +37,7 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: li
     df['chiefcomplaint'] = df['chiefcomplaint'].apply(_clean_chief_complaint_string)
     df = df[df['chiefcomplaint'] != 'REMOVE_ROW']
     df.to_csv(out_file_path, index=False)
+    return df
 
 def calculate_demographics(csv_file_path: str, records_to_generate: int):
     """

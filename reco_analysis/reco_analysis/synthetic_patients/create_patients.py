@@ -158,6 +158,7 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
     return patient_prompt
 
 def create_patients(n,
+                    raw_mimic_file_path=RAW_MIMIC_FILE,
                     cleaned_mimic_file_path=CLEANED_MIMIC_FILE,
                     male_first_names_file=MALE_FIRST_NAMES_FILE,
                     female_first_names_file=FEMALE_FIRST_NAMES_FILE,
@@ -170,7 +171,7 @@ def create_patients(n,
     Args:
         df (pd.DataFrame): The DataFrame containing the MIMIC-ED dataset.
         n (int): The number of synthetic patients to generate.
-        cleaned_mimic_file_path (str): The path to the cleaned MIMIC-ED dataset.
+        raw_mimic_file_path (str): The path to the raw MIMIC-ED dataset.
         male_first_names_file (str): The path to the CSV file containing first names for males.
         female_first_names_file (str): The path to the CSV file containing first names for females.
         last_names_file (str): The path to the CSV file containing last names by race.
@@ -179,7 +180,7 @@ def create_patients(n,
     Returns:
         dict: A dictionary of synthetic patients.
     """
-    df = pd.read_csv(cleaned_mimic_file_path)
+    df = clean_chief_complaint(raw_mimic_file_path, cleaned_mimic_file_path)
 
     patients = {}
     selected_patient_ids = set(patients_to_exclude)
@@ -226,19 +227,3 @@ def export_synthetic_patients(patients, output_file_path=OUTPUT_PATIENTS_FILE):
     """
     with open(output_file_path, 'w') as json_file:
         json.dump(patients, json_file)
-
-if __name__ == "__main__":    
-    # Step 1: Clean Chief Complaint Data
-    clean_chief_complaint(RAW_MIMIC_FILE, CLEANED_MIMIC_FILE)
-
-    # Step 2: Generate Top Last Names
-    generate_top_last_names(LAST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE)
-
-    # Step 3: Get Patients to Exclude
-    patients_to_exclude = get_patients_to_exclude(PATIENTS_EXCLUDE_FILE)
-
-    # Step 4: Create Synthetic Patients
-    synthetic_patients = create_patients(20, CLEANED_MIMIC_FILE, MALE_FIRST_NAMES_FILE, FEMALE_FIRST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE, patients_to_exclude)
-
-    # Step 5: Save Synthetic Patients
-    export_synthetic_patients(synthetic_patients, OUTPUT_PATIENTS_FILE)

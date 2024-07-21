@@ -138,6 +138,11 @@ create_prod_db:
 	# create the tables using alembic_upgrade
 	make alembic_upgrade env=PROD
 
+## Streamlit - start app. Set either `env=DEV` (default) or `env=PROD`
+.PHONY: chatbot_app_up
+chatbot_app_up:
+	POSTGRES_DB_ENVIRONMENT=$(env) poetry run streamlit run reco_analysis/chatbot_app/streamlit_app.py
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################

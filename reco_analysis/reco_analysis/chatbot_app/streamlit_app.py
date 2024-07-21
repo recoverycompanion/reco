@@ -10,6 +10,7 @@ from yaml.loader import SafeLoader
 
 from reco_analysis.chatbot.chatbot import DialogueAgent
 from reco_analysis.data_model import data_models
+from reco_analysis.summarizer_app import summarizer_job
 
 session = data_models.get_session()
 
@@ -149,14 +150,20 @@ def initialize_agent(patient: data_models.Patient) -> DialogueAgent:
         DialogueAgent: The initialized DialogueAgent object.
     """
     latest_conversation = patient.get_latest_conversation_session()
-    session_id = None if latest_conversation is None or latest_conversation.completed else latest_conversation.id
+    session_id = (
+        None
+        if latest_conversation is None or latest_conversation.completed
+        else latest_conversation.id
+    )
     agent = DialogueAgent(
         role="Doctor",
         patient_id=patient.id,
         session_id=session_id,
     )
     latest_message_role = agent.get_latest_message_role()
-    st.session_state.turn = "Doctor" if latest_message_role is None or latest_message_role == "Patient" else "Patient"
+    st.session_state.turn = (
+        "Doctor" if latest_message_role is None or latest_message_role == "Patient" else "Patient"
+    )
     st.session_state.conversation_ended = False
     return agent
 
@@ -218,11 +225,12 @@ def handle_user_input(agent, prompt: str | None):
         with st.chat_message("Patient", avatar=get_icon("Patient")):
             st.markdown(prompt)
         st.session_state.turn = "Doctor"  # Next turn is for the doctor
-        
+
         # Generate and display doctor's response (including adding to memory)
         response = agent.generate_response()  # Generate the response
         stream_response("Doctor", response)
         st.session_state.turn = "Patient"  # Next turn is for the patient
+
 
 def end_conversation(agent: DialogueAgent, session):
     """
@@ -231,13 +239,16 @@ def end_conversation(agent: DialogueAgent, session):
     Args:
         agent (DialogueAgent): The dialogue agent managing the conversation.
         session (Session): The SQLAlchemy session object.
-    """    
+    """
     st.session_state.conversation_ended = True
     agent.end_conversation = True
-    convo_session: data_models.ConversationSession = (
-        data_models.ConversationSession.get_by_id(agent.session_id, session)
+    convo_session: data_models.ConversationSession = data_models.ConversationSession.get_by_id(
+        agent.session_id, session
     )
     convo_session.mark_as_completed(session)
+
+    # also generate a summary email
+    summarizer_job.summarize_conversation(conversation_session_id=convo_session.id)
 
 
 def reset_chat():
@@ -311,7 +322,7 @@ def main():
             disabled=st.session_state.conversation_ended,
         ):
             end_conversation(agent, session)
-        
+
         # Display initial doctor's message if not already shown
         if st.session_state.turn == "Doctor":
             initial_response = agent.generate_response()
@@ -322,16 +333,16 @@ def main():
         if not st.session_state.conversation_ended:
             prompt = st.chat_input(
                 "Enter your message:", disabled=st.session_state.conversation_ended
-            )    
+            )
             handle_user_input(agent, prompt)
 
         # End the conversation if the patient confirms or conversation_flow_button is clicked
         else:
             st.write("Thank you for using the RECO Consultation tool. Goodbye")
             if conversation_flow_button.button(
-                    "New Conversation", key="new_conversation", type="secondary"
-                ):
-                    reset_chat()
+                "New Conversation", key="new_conversation", type="secondary"
+            ):
+                reset_chat()
 
     else:
         # Display a warning if the user is not authenticated

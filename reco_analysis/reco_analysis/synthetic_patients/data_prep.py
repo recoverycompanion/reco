@@ -6,8 +6,8 @@ import pandas as pd
 import numpy as np
 import json
 
-INPUT_FILE_PATH = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
-CLEANED_FILE_PATH = '../data/processed/mimic_ed_hf_240609_1741_cleaned.csv'
+INPUT_FILE_PATH = '../../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
+CLEANED_FILE_PATH = '../../data/processed/mimic_ed_hf_240609_1741_cleaned.csv'
 
 def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: list = ['Transfer', 'Abnormal labs', 'Meds refill']):
     """
@@ -160,3 +160,6 @@ def get_patients_to_exclude(file_path: str):
     
     else:
         return []
+    
+if __name__ == '__main__':
+    clean_chief_complaint(INPUT_FILE_PATH, CLEANED_FILE_PATH)

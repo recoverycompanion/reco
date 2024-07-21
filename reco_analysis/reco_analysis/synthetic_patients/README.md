@@ -4,12 +4,12 @@ This folder contains scripts for generating synthetic patient data based on the 
 
 ## Contents
 
-- **utils.py**: Utility functions for data processing.
+- **data_prep.py**: Utility functions for data processing.
 - **create_patients.py**: Main script for generating synthetic patients.
 
 ## Scripts
 
-### utils.py
+### data_prep.py
 
 Utility functions for data cleaning, demographic calculations, name generation, and patient exclusion.
 
@@ -34,19 +34,19 @@ Main script for creating synthetic patients using demographic data and a list of
 
 1. **Clean Chief Complaint Data**
     ```python
-    from reco_analysis.synthetic_patients.utils import clean_chief_complaint
+    from reco_analysis.synthetic_patients.data_prep import clean_chief_complaint
     clean_chief_complaint(RAW_MIMIC_FILE, CLEANED_MIMIC_FILE)
     ```
 
 2. **Generate Top Last Names**
     ```python
-    from reco_analysis.synthetic_patients.utils import generate_top_last_names
+    from reco_analysis.synthetic_patients.data_prep import generate_top_last_names
     generate_top_last_names(LAST_NAMES_FILE, PROCESSED_LAST_NAMES_FILE)
     ```
 
 3. **Get Patients to Exclude**
     ```python
-    from reco_analysis.synthetic_patients.utils import get_patients_to_exclude
+    from reco_analysis.synthetic_patients.data_prep import get_patients_to_exclude
     patients_to_exclude = get_patients_to_exclude(PATIENTS_EXCLUDE_FILE)
     ```
 

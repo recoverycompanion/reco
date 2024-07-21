@@ -5,10 +5,9 @@ It cleans chief complaint data, generates demographic distributions, assigns rea
 import pandas as pd
 import numpy as np
 import random
-import os
 import json
 from langchain.prompts import PromptTemplate
-from reco_analysis.synthetic_patients.utils import clean_chief_complaint, calculate_demographics, generate_top_last_names, get_patients_to_exclude
+from reco_analysis.synthetic_patients.data_prep import calculate_demographics
 
 # Define global variables for file paths
 RAW_MIMIC_FILE = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
@@ -158,7 +157,6 @@ def turn_row_into_prompt(row, last_names_file, male_first_names_file, female_fir
     return patient_prompt
 
 def create_patients(n,
-                    raw_mimic_file_path=RAW_MIMIC_FILE,
                     cleaned_mimic_file_path=CLEANED_MIMIC_FILE,
                     male_first_names_file=MALE_FIRST_NAMES_FILE,
                     female_first_names_file=FEMALE_FIRST_NAMES_FILE,
@@ -180,7 +178,8 @@ def create_patients(n,
     Returns:
         dict: A dictionary of synthetic patients.
     """
-    df = clean_chief_complaint(raw_mimic_file_path, cleaned_mimic_file_path)
+    # Make sure you have previously ran the data_prep.py script to clean the MIMIC dataset 
+    df = pd.read_csv(cleaned_mimic_file_path)
 
     patients = {}
     selected_patient_ids = set(patients_to_exclude)

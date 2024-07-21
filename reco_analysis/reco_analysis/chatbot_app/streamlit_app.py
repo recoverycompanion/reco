@@ -168,7 +168,7 @@ def initialize_agent(patient: data_models.Patient) -> DialogueAgent:
     return agent
 
 
-def get_icon(role):
+def get_icon(role: str) -> str:
     """
     Get the icon for the speaker based on their role.
 
@@ -181,7 +181,7 @@ def get_icon(role):
     return "ai" if role == "Doctor" else "user"
 
 
-def stream_response(role, response_text):
+def stream_response(role: str, response_text: str):
     """
     Stream the response text word by word with a delay.
 
@@ -198,7 +198,7 @@ def stream_response(role, response_text):
             time.sleep(0.05)
 
 
-def display_chat_history(agent):
+def display_chat_history(agent: DialogueAgent):
     """
     Display the chat messages from the agent's memory.
 
@@ -211,7 +211,7 @@ def display_chat_history(agent):
             st.markdown(content)
 
 
-def handle_user_input(agent, prompt: str | None):
+def handle_user_input(agent: DialogueAgent, prompt: str | None):
     """
     Handle user input and process the conversation flow.
 
@@ -295,10 +295,17 @@ def main():
         )
 
     # Authenticate the user
-    authenticator, name, authentication_status, patient_username, patient = setup_authenticator()
+    if (
+        "authentication_status" not in st.session_state
+        or not st.session_state.authentication_status
+    ):
+        authenticator, _, _, _, patient = setup_authenticator()
+        st.session_state.authentication_details = (authenticator, patient)
+    else:
+        authenticator, patient = st.session_state.authentication_details
 
     # Check if the user is authenticated
-    if authentication_status == True and patient is not None:
+    if st.session_state.authentication_status == True and patient is not None:
         authenticator.logout("Logout", "sidebar")
         st.write(f"Welcome *{patient.first_name}*")
 
@@ -346,7 +353,7 @@ def main():
 
     else:
         # Display a warning if the user is not authenticated
-        if authentication_status == False:
+        if st.session_state.authentication_status == False:
             st.error("Patient ID and/or Password is incorrect")
 
         # allow for new patient account sign up

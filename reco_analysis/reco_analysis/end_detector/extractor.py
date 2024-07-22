@@ -39,7 +39,7 @@ Follow these steps:
    - The last line of the first conversation is always an odd line number.
    - The last line of the first conversation will not contain a greeting or welcoming phrase typically used to start conversations.
 2. Identify the second conversation's start, if applicable:
-   - Look for a Doctor greeting the Patient again, e.g., "Hello [Patient name], ello Javier Rivas, I'm here to follow up on your health since our last conversation. How have you been feeling recently? Any new or worsening symptoms you'd like to discuss today?
+   - Look for a Doctor greeting the Patient again, e.g., "Hello [Patient name], I'm here to follow up on your health since our last conversation. How have you been feeling recently? Any new or worsening symptoms you'd like to discuss today?"
    - The first line of the second conversation is always spoken by the Doctor.
    - The second conversation always starts with an even line number.
 3. If **Case 1 (first conversation does not end)** applies:

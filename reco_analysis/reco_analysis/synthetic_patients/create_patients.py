@@ -10,8 +10,7 @@ from langchain.prompts import PromptTemplate
 from reco_analysis.synthetic_patients.data_prep import calculate_demographics
 
 # Define global variables for file paths
-RAW_MIMIC_FILE = '../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
-CLEANED_MIMIC_FILE = '../data/processed/mimic/mimic_ed_hf_240609_1741_cleaned.csv'
+CLEANED_MIMIC_FILE = '../data/processed/mimic/mimic_ed_hf_cleaned_06_30_2024.csv'
 LAST_NAMES_FILE = '../data/raw/names/last_raceNameProbs.csv'
 PROCESSED_LAST_NAMES_FILE = '../data/processed/names/top_100_last_names_by_value.csv'
 MALE_FIRST_NAMES_FILE = '../data/raw/names/Male_Names.csv'

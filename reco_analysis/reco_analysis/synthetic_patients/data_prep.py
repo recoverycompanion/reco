@@ -9,6 +9,9 @@ import json
 INPUT_FILE_PATH = '../../data/raw/mimic/mimic_ed_hf_240609_1741.csv'
 CLEANED_FILE_PATH = '../../data/processed/mimic_ed_hf_240609_1741_cleaned.csv'
 
+LASTNAME_INPUT_FILE_PATH = '../../data/raw/names/last_raceNameProbs.csv'
+LASTNAME_OUTPUT_FILE_PATH = '../../data/processed/names/top_100_last_names_by_value.csv'
+
 def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: list = ['Transfer', 'Abnormal labs', 'Meds refill']):
     """
     Clean the chief complaint field in the csv file.
@@ -17,6 +20,9 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: li
         in_file_path: Path to the csv file.
         out_file_path: Path to the output csv file.
         ccs_to_omit: List of chief complaints to omit.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the cleaned data.
     """
     def _clean_chief_complaint_string(s):
         if '"' in s:
@@ -37,6 +43,8 @@ def clean_chief_complaint(in_file_path: str, out_file_path: str, ccs_to_omit: li
     df['chiefcomplaint'] = df['chiefcomplaint'].apply(_clean_chief_complaint_string)
     df = df[df['chiefcomplaint'] != 'REMOVE_ROW']
     df.to_csv(out_file_path, index=False)
+    print(f"Cleaned data saved to {out_file_path}")
+
     return df
 
 def calculate_demographics(csv_file_path: str, records_to_generate: int):
@@ -108,13 +116,16 @@ def calculate_demographics(csv_file_path: str, records_to_generate: int):
 
     return result_dict
 
-def generate_top_last_names(csv_file_path: str = '../data/raw/names/last_raceNameProbs.csv', output_file_path: str = '../data/processed/names/top_100_last_names_by_value.csv'):
+def generate_top_last_names(csv_file_path: str = LASTNAME_INPUT_FILE_PATH, output_file_path: str = LASTNAME_OUTPUT_FILE_PATH):
     """
     Generates the top 100 last names for different racial groups.
 
     Args:
         csv_file_path (str): The path to the input CSV file.
         output_file_path (str): The path to save the output CSV file with top last names.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the top 100 last names for different racial groups.
     """
     df = pd.read_csv(csv_file_path)
 
@@ -139,6 +150,9 @@ def generate_top_last_names(csv_file_path: str = '../data/raw/names/last_raceNam
         df_merged[col] = df_merged[col].fillna(0)
 
     df_merged.to_csv(output_file_path, index=False)
+    print(f"Top 100 last names by value saved to {output_file_path}")
+
+    return df_merged
 
 def get_patients_to_exclude(file_path: str):
     """
@@ -163,3 +177,4 @@ def get_patients_to_exclude(file_path: str):
     
 if __name__ == '__main__':
     clean_chief_complaint(INPUT_FILE_PATH, CLEANED_FILE_PATH)
+    generate_top_last_names(LASTNAME_INPUT_FILE_PATH, LASTNAME_OUTPUT_FILE_PATH)

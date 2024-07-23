@@ -101,6 +101,16 @@ For all `alembic_*` commands, you can specify the environment using the `env` ar
 # Install dependencies
 poetry install
 
+# Next, open a postgres shell
+psql postgres
+
+# Inside the postgres shell, create an account with DB creation authorization
+CREATE ROLE reco_admin WITH LOGIN PASSWORD 'averysecurepasswordthatyouwillneverguess';
+ALTER ROLE reco_admin CREATEDB;
+
+# exit the shell
+\q
+
 # Create and initialize the development database (this will also run the Alembic migrations and add fake test data)
 make create_dev_db
 ```

@@ -23,7 +23,7 @@ def path_maker(config_params: dict):
     model_name = config_params['model_name']
     patient_prompt = config_params['patient_prompt']
     doctor_prompt = config_params['doctor_prompt']
-    timestamp = config_params['doctor_prompt']
+    timestamp = config_params['timestamp']
     
     # Set the folder path depending on type
     if type == 'transcripts':
@@ -54,8 +54,8 @@ def path_maker(config_params: dict):
 def compile_paths(
         termination: Literal['full', 'short'],
         model_name: Literal['3.5', '4o-mini', '4o'],
-        patient_prompt: Literal['base', 'reluctant', 'distracted'],
-        doctor_prompt: Literal['base', 'improved'],
+        patient_prompt: str,
+        doctor_prompt: str,
         timestamp = DEFAULT_TIMESTAMP
 ):
     """
@@ -87,3 +87,18 @@ def compile_paths(
 
     # Return tuple
     return transcripts_path, transcripts_eval_path, transcripts_eval_improvements_path
+
+if __name__ == '__main__':
+    # Example usage of path_maker
+    config_params = {
+        'type': 'transcripts',
+        'termination': 'full',
+        'model_name': '4o-mini',
+        'patient_prompt': 'rel1',
+        'doctor_prompt': 'base',
+        'timestamp': 2307
+    }
+    print(path_maker(config_params))
+
+    # Example usage of compile_paths
+    print(compile_paths('full', '4o-mini', 'reluctant', 'base', 2307))

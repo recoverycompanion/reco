@@ -12,6 +12,7 @@ logger.info(f"PROJ_ROOT path is: {PROJ_ROOT}")
 
 DATA_DIR = PROJ_ROOT / "data"
 TRANSCRIPTS_DIR = DATA_DIR / "transcripts"
+TRANSCRIPTS_REDTEAM_DIR = TRANSCRIPTS_DIR / "redteam"
 SUMMARIES_DIR = DATA_DIR / "summaries"
 EVALUATION_DIR = DATA_DIR / "evaluations"
 TRANSCRIPTS_EVALUATION_DIR = EVALUATION_DIR / "transcripts"

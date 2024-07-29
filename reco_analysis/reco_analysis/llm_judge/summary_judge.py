@@ -91,7 +91,10 @@ ORIGINAL PROMPT:
 ```
 """
 
-improvement_additional_instructions = """Additionally, apply JSON best practices to keep the outputs processable by downstream systems. After generating the new prompt, please summarize the key changes you made to the prompt under a "KEY CHANGES" section in the response."""
+improvement_additional_instructions = """Additionally, apply JSON best practices to keep the outputs processable by downstream systems.
+Before generating the new prompt, summarize a "KEY GOALS" section for the prompt improvement for what you're about to do, pulling in specific examples from the learnings.
+Then, write a "REVISED PROMPT" section making changes to ORIGINAL PROMPT. Be specific on what the new prompt should do by referring to the learnings.
+After generating the new prompt, please summarize the key changes you made to the prompt under a "KEY CHANGES" section in the response."""
 
 
 def get_system_message_summary_judge(judge_criteria: dict):
@@ -141,6 +144,49 @@ def parse_response(response_content: str) -> dict:
             break
 
     return response_dict
+
+
+def combine_current_symptoms_agree(result_dict: dict):
+    """If orthopnea_agree is present, combine it with current_symptoms_agree."""
+    if "orthopnea_agree" in result_dict and "current_symptoms_agree" in result_dict:
+        modified_result_dict = result_dict.copy()
+        modified_result_dict["current_symptoms_agree"]["value"] = (
+            result_dict["current_symptoms_agree"]["value"]
+            and result_dict["orthopnea_agree"]["value"]
+        )
+        modified_result_dict["current_symptoms_agree"]["reasoning"] = (
+            result_dict["current_symptoms_agree"]["reasoning"]
+            + "; "
+            + result_dict["orthopnea_agree"]["reasoning"]
+        )
+        return modified_result_dict
+
+    return result_dict
+
+
+def combine_no_diagnose(result_dict: dict):
+    """Combine no_normality and no_stability into no_diagnose."""
+    if (
+        "no_normality" in result_dict
+        and "no_stability" in result_dict
+        and "no_diagnose" in result_dict
+    ):
+        modified_result_dict = result_dict.copy()
+        modified_result_dict["no_diagnose"]["value"] = (
+            result_dict["no_diagnose"]["value"]
+            and result_dict["no_normality"]["value"]
+            and result_dict["no_stability"]["value"]
+        )
+        modified_result_dict["no_diagnose"]["reasoning"] = (
+            result_dict["no_diagnose"]["reasoning"]
+            + " "
+            + result_dict["no_normality"]["reasoning"]
+            + " "
+            + result_dict["no_stability"]["reasoning"]
+        )
+        return modified_result_dict
+
+    return result_dict
 
 
 @dataclasses.dataclass
@@ -249,6 +295,12 @@ class SummaryJudge:
                 if k in judge_criteria[section_name].keys() or k == "observations"
             }
 
+            # special cases of combining results
+            if section_name == "current_symptoms":
+                subset_results_dict = combine_current_symptoms_agree(subset_results_dict)
+            elif section_name == "summary":
+                subset_results_dict = combine_no_diagnose(subset_results_dict)
+
             if "observations" in subset_results_dict:
                 observation = subset_results_dict.pop("observations")
                 if observation:
@@ -346,7 +398,7 @@ if __name__ == "__main__":
                 new_summary[key] = value
         summaries[patient_id]["summary"] = new_summary
 
-    patient_id = list(summaries.keys())[0]
+    patient_id = list(summaries.keys())[1]
     transcript = transcripts[patient_id]["chat_transcript"]
     summary = summaries[patient_id]["summary"]
 

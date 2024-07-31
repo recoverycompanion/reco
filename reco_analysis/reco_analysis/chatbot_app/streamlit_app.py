@@ -260,7 +260,7 @@ def end_conversation(agent: DialogueAgent, session):
     convo_session.mark_as_completed(session)
 
     # also generate a summary email
-    # summarizer_job.summarize_conversation(conversation_session_id=convo_session.id)
+    summarizer_job.summarize_conversation(conversation_session_id=convo_session.id)
 
 
 def reset_chat():

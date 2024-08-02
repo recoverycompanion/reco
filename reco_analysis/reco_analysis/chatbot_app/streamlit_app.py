@@ -183,7 +183,7 @@ def get_icon(role: str) -> str:
 
 def stream_response(role: str, response_text: str):
     """
-    Stream the response text word by word with a delay.
+    Stream the response text line by line with a delay, respecting newlines in the text.
 
     Args:
         role (str): The role of the speaker ("Doctor" or "Patient").
@@ -192,10 +192,22 @@ def stream_response(role: str, response_text: str):
     with st.chat_message(role, avatar=get_icon(role)):
         response_placeholder = st.empty()
         full_response = ""
-        for word in response_text.split():
-            full_response += word + " "
-            response_placeholder.markdown(full_response)
-            time.sleep(0.05)
+        
+        for line in response_text.splitlines():  # Split the text by lines first
+            if line.strip():  # Process non-empty lines
+                words = line.split()
+                for word in words:
+                    full_response += word + " "
+                    response_placeholder.markdown(full_response)
+                    time.sleep(0.05)
+                full_response += "\n"  # Add newline after each processed line
+            else:
+                full_response += "\n"  # Preserve blank lines
+                response_placeholder.markdown(full_response)
+                time.sleep(0.05)
+        
+        # Ensure the final output respects the original formatting
+        response_placeholder.markdown(full_response)
 
 
 def display_chat_history(agent: DialogueAgent):
@@ -278,7 +290,6 @@ def export_conversation_history(agent):
         for message in agent.get_history():
             file.write(message + "\n")
 
-
 def main():
     """
     Main function to set up and run the Streamlit interface for the chatbot,
@@ -333,6 +344,8 @@ def main():
         # Display initial doctor's message if not already shown
         if st.session_state.turn == "Doctor":
             initial_response = agent.generate_response()
+            # Remove the initial message from the memory to avoid duplication
+            agent.memory.messages.pop()
             st.session_state.turn = "Patient"  # After the doctor speaks, it's the patient's turn
             stream_response("Doctor", initial_response)
 

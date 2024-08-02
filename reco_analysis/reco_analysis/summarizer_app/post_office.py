@@ -72,7 +72,7 @@ def email_report(
         cid=as_cid[1:-1],
     )
 
-    breakpoint()  # throttling this for now, don't want to spam while testing
+    # breakpoint()  # throttling this for now, don't want to spam while testing
 
     # Send the email
     with smtplib.SMTP(smtp_server, smtp_port) as server:

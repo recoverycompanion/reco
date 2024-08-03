@@ -5,7 +5,9 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
 <p align="center">
-  <img src="images/Reco_Demo_Thumbnail.png" img width="75%"/>
+    <a href="https://www.youtube.com/watch?v=9YP-0eKTouY">
+    <img src="images/Reco_Demo_Thumbnail.png" img width="75%"/>
+    </a>
 </p>
 
 ## Features
@@ -32,7 +34,7 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
 <table>
-  <tr>
+  </tr>
     <td><img src="images/Team_Member_Photos/Mike_Khor.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Gary_Kong.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" width=200></td>
@@ -44,10 +46,10 @@ RECO is a capstone project developed by a team of us at the University of Califo
     <td><center>Dr. Farid Gholitabar</center></td>
     <td><center>Annie Friar</center></td>
   </tr>
-    <td><center><mike.khor@berkeley.edu></center></td>
-    <td><center><garykong@berkeley.edu></center></td>
-    <td><center><farid.gholitabar@berkeley.edu></center></td>
-    <td><center><anniefriar@berkeley.edu></center></td>
+    <td><center><sub><sup>mike.khor@berkeley.edu</sup></sub></center></td>
+    <td><center><sub><sup>garykong@berkeley.edu</sup></sub></center></td>
+    <td><center><sub><sup>farid.gholitabar@berkeley.edu</sup></sub></center></td>
+    <td><center><sub><sup>anniefriar@berkeley.edu</sup></sub></center></td>
   </tr>
  </table>
 

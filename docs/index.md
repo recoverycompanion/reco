@@ -4,6 +4,8 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
+## Reco Demo
+
 <p align="center">
     <a href="https://www.youtube.com/watch?v=9YP-0eKTouY">
     <img src="images/Reco_Demo_Thumbnail.png" img width="75%"/>
@@ -12,11 +14,14 @@ RECO aims to monitor these patients by routinely asking about their symptoms, vi
 
 ## Features
 
-- **Symptom Tracking:** Monitors patient-reported symptoms and vitals through daily interactions.
-- **Medication Reminder:** Ensures that patients adhere to their medication schedule.
-- **Summarized Report:**
+- **Symptom Tracking:** Monitors patient-reported symptoms and vitals through clinically informed daily interactions.
+- **Summarized Report:** Accurate summary of patient encounter is automatically sent to the patient's provider for review.
 
 ## Technical Architecture
+
+<p align="center">
+    <img src="images/Overall_Architecture.png" img width="75%"/>
+</p>
 
 RECO is built using the following technologies:
 
@@ -47,6 +52,10 @@ RECO is a capstone project developed by a team of us at the University of Califo
     <td><center><a href="mailto:farid.gholitabar@berkeley.edu">Dr. Farid Gholitabar</a></center></td>
   </tr>
  </table>
+
+## Acknowledgements
+
+We would like to thank our course instructors (Professors Joyce Schen, Zona Kostic), the UC Berkeley I School, and all those who provided invaluable feedback and support throughout the project.
 
 ## Contributions
 

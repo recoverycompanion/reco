@@ -5,7 +5,7 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
 <p align="center">
-  <img src="images/Reco_Demo_Thumbnail.png" img width="50%"/>
+  <img src="images/Reco_Demo_Thumbnail.png" img width="75%"/>
 </p>
 
 ## Features
@@ -33,23 +33,23 @@ RECO is a capstone project developed by a team of us at the University of Califo
 
 <table>
   <tr>
-    <td>Mike Khor</td>
-    <td>Gary Kong</td>
-    <td>Dr. Farid Gholitabar</td>
-    <td>Annie Friar</td>
-  </tr>
-  <tr>
     <td><img src="images/Team_Member_Photos/Mike_Khor.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Gary_Kong.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Annie_Friar.png" img width=200></td>
   </tr>
+    <tr>
+    <td><center>Mike Khor</center></td>
+    <td><center>Gary Kong</center></td>
+    <td><center>Dr. Farid Gholitabar</center></td>
+    <td><center>Annie Friar</center></td>
+  </tr>
+    <td><center><mike.khor@berkeley.edu></center></td>
+    <td><center><garykong@berkeley.edu></center></td>
+    <td><center><farid.gholitabar@berkeley.edu></center></td>
+    <td><center><anniefriar@berkeley.edu></center></td>
+  </tr>
  </table>
-
-| <img src="images/Team_Member_Photos/Mike_Khor.png" img width="23%"/> | <img src="images/Team_Member_Photos/Gary_Kong.png"  img width="23%" /> | <img src="images/Team_Member_Photos/Farid_Gholitabar.png"  img width="23%" /> | <img src="images/Team_Member_Photos/Annie_Friar.png"  img width="23%" /> |
-:-------------------------------:|:-------------------------------:|:-------------------------------:|:-------------------------------:|
-Mike Khor                        |         Gary Kong               |       Dr. Farid Gholitabar      |         Annie Friar             |
-<mike.khor@berkeley.edu>         |   <garykong@berkeley.edu>       | <farid.gholitabar@berkeley.edu> |  <anniefriar@berkeley.edu>      |
 
 ## Contributions
 

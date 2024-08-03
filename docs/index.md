@@ -6,7 +6,7 @@
 
 ## Product Overview
 
-RECO aims to reduce these high readmission rates by providing continuous, AI-driven monitoring and support for heart failure patients. It collects clinically relevant symptoms information, and then compiles this information into a structured report for their physician.
+RECO aims to reduce readmission rates by providing continuous, AI-driven monitoring and support for heart failure patients. It collects clinically relevant symptoms information, and then compiles this information into a structured report for their physician.
 
 <p align="center">
     <img src="images/MVP_Benefits.png" img width="75%"/>

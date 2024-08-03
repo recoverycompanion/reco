@@ -4,7 +4,7 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
-[![RECO Demo](images/Reco_Demo_Thumbnail.png | width=400)](https://www.youtube.com/watch?v=9YP-0eKTouY "RECO Demo")
+[<img alt="RECO Demo" width="400px" src="images/Reco_Demo_Thumbnail.png" />](https://www.youtube.com/watch?v=9YP-0eKTouY)
 
 ## Features
 
@@ -29,7 +29,7 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
-| <img src="images/Mike_Khor.png" width="100" /> | <img src="images/Gary_Kong.png" width="100" /> | <img src="images/Farid_Gholitabar.png" width="100" /> | <img src="images/Annie_Friar.png" width="100" /> |
+| <img src="images/Team_Member_Photos/Mike_Khor.png" width="100" /> | <img src="images/Team_Member_Photos/Gary_Kong.png" width="100" /> | <img src="images/Team_Member_Photos/Farid_Gholitabar.png" width="100" /> | <img src="images/Team_Member_Photos/Annie_Friar.png" width="100" /> |
 
 :------------------------:|:---------------------------|:---------------------------------:|:----------------------------:|
 Mike Khor                 |         Gary Kong          |       Dr. Farid Gholitabar        |         Annie Friar          |

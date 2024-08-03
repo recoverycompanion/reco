@@ -1,10 +1,18 @@
-# RECO: Recovery Companion
+## Why Heart Failure?
 
-We developed a conversational AI that assists patients with heart failure (HF) who have recently been discharged from the hospital. HF is a condition where the heart struggles to pump blood efficiently, often due to damage or disease affecting the heart's muscle. Patients frequently face worsened symptoms soon after hospital discharge, which if not addressed swiftly, can lead to rehospitalization.
+1 in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually.
 
-RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
+## Product Overview
 
-## Reco Demo
+RECO aims to reduce these high readmission rates by providing continuous, AI-driven monitoring and support for heart failure patients. It collects clinically relevant symptoms information, and then compiles this information into a structured report for their physician.
+
+<p align="center">
+    <img src="images/MVP_Benefits.png" img width="75%"/>
+</p>
+
+## See RECO in Action
+
+View a demo of RECO by clicking the thumbnail below.
 
 <p align="center">
     <a href="https://www.youtube.com/watch?v=9YP-0eKTouY">
@@ -12,12 +20,9 @@ RECO aims to monitor these patients by routinely asking about their symptoms, vi
     </a>
 </p>
 
-## Features
-
-- **Symptom Tracking:** Monitors patient-reported symptoms and vitals through clinically informed daily interactions.
-- **Summarized Report:** Accurate summary of patient encounter is automatically sent to the patient's provider for review.
-
 ## Technical Architecture
+
+Our architecture integrates a UI, chatbot agent, database, and summarization engine.
 
 <p align="center">
     <img src="images/Overall_Architecture.png" img width="75%"/>
@@ -30,7 +35,22 @@ RECO is built using the following technologies:
 - **AI Model:** Utilizes OpenAI's GPT models for natural language understanding and generation.
 - **Database:** PostgreSQL for storing patient data securely.
 
-## Request for a Live Demo
+## Conversational AI & Summarization Engine Evaluation
+
+<p align="center">
+    <img src="images/Model_Evaluation.png" img width="75%"/>
+</p>
+
+The performance of RECO was evaluated using a combination of synthetic patient profiles and human judges. We compared the chatbot's outputs against human evaluations to ensure accuracy and reliability. Key performance indicators included the agreement of symptom summaries with patient transcripts and the chatbot's ability to prompt patients about medication adherence and symptom management. We then developed and LLM Judge that was able to match human evaluation performance. With that, we were able to iterate and evaluate scalably as we improved our chatbot and summarization engine.
+
+## Key Project Impacts
+
+- **Improved Data Accuracy:** The summarization engine minimizes human error and provides consistent, relevant information for healthcare providers.
+- **Enhanced Decision-Making:** Doctors receive concise summaries, facilitating quicker and better-informed clinical decisions.
+- **Scalability:** The system allows for the management of larger patient volumes without overburdening healthcare providers.
+- **Patient Engagement:** Studies show and patients agree: the chatbot is easier and more straightforward than traditional forms.
+
+## Request a Live Demo
 
 If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
 
@@ -62,3 +82,7 @@ We would like to thank our course instructors (Professors Joyce Schen, Zona Kost
 Contributions are welcome! Feel free to fork the project and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+<p align="center">
+    <img src="images/reco_logo.png" img width="20%"/>
+</p>

@@ -6,6 +6,8 @@ RECO aims to monitor these patients by routinely asking about their symptoms, vi
 
 <!-- Place link for demo video here -->
 
+[![See RECO in action](<img src="reco_analysis/docs/reco_logo.jpeg">)](https://www.youtube.com/watch?v=9YP-0eKTouY "See RECO in action!")
+
 ## Features
 
 - **Symptom Tracking:** Monitors patient-reported symptoms and vitals through daily interactions.

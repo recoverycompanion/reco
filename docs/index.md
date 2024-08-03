@@ -6,6 +6,10 @@ RECO aims to monitor these patients by routinely asking about their symptoms, vi
 
 [<img alt="RECO Demo" width="400px" src="images/Reco_Demo_Thumbnail.png" />](https://www.youtube.com/watch?v=9YP-0eKTouY)
 
+<p align="center">
+  <img src="images/Reco_Demo_Thumbnail.png" img width="50%"/>
+</p>
+
 ## Features
 
 - **Symptom Tracking:** Monitors patient-reported symptoms and vitals through daily interactions.
@@ -29,8 +33,22 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
-| <img src="images/Team_Member_Photos/Mike_Khor.png" width="100" /> | <img src="images/Team_Member_Photos/Gary_Kong.png" width="100" /> | <img src="images/Team_Member_Photos/Farid_Gholitabar.png" width="100" /> | <img src="images/Team_Member_Photos/Annie_Friar.png" width="100" /> |
+<table>
+  <tr>
+    <td>Mike Khor</td>
+    <td>Gary Kong</td>
+    <td>Dr. Farid Gholitabar</td>
+    <td>Annie Friar</td>
+  </tr>
+  <tr>
+    <td><img src="images/Team_Member_Photos/Mike_Khor.png" img width="23%"></td>
+    <td><img src="images/Team_Member_Photos/Gary_Kong.png" img width="23%"></td>
+    <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" img width="23%"></td>
+    <td><img src="images/Team_Member_Photos/Annie_Friar.png" img width="23%"></td>
+  </tr>
+ </table>
 
+| <img src="images/Team_Member_Photos/Mike_Khor.png" width="100" /> | <img src="images/Team_Member_Photos/Gary_Kong.png" width="100" /> | <img src="images/Team_Member_Photos/Farid_Gholitabar.png" width="100" /> | <img src="images/Team_Member_Photos/Annie_Friar.png" width="100" /> |
 :------------------------:|:---------------------------|:---------------------------------:|:----------------------------:|
 Mike Khor                 |         Gary Kong          |       Dr. Farid Gholitabar        |         Annie Friar          |
 <mike.khor@berkeley.edu>  |   <garykong@berkeley.edu>  |  <farid.gholitabar@berkeley.edu>  |  <anniefriar@berkeley.edu>   |

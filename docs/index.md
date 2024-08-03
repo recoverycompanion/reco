@@ -4,7 +4,7 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
-[![RECO Demo](images/Reco_Demo_Thumbnail.png)](https://www.youtube.com/watch?v=9YP-0eKTouY "RECO Demo")
+[![RECO Demo](images/Reco_Demo_Thumbnail.png | width=400)](https://www.youtube.com/watch?v=9YP-0eKTouY "RECO Demo")
 
 ## Features
 
@@ -29,11 +29,10 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
+![](images/Mike_Khor.png | width=100) |  ![](images/Gary_Kong.png | width=100) |  ![](images/Farid_Gholitabar.png | width=100) |  ![](images/Annie_Friar.png | width=100) |
 :------------------------:|:---------------------------|:---------------------------------:|:----------------------------:|
-![](images/Mike_Khor.png) |  ![](images/Gary_Kong.png) |  ![](images/Farid_Gholitabar.png) |  ![](images/Annie_Friar.png) |
-:------------------------:|:---------------------------|:---------------------------------:|:----------------------------:|
-Mike Khor                 |  Gary Kong                 |  Dr. Farid Gholitabar             |  Annie Friar                 |
-<mike.khor@berkeley.edu>  |  <garykong@berkeley.edu>   | <farid.gholitabar@berkeley.edu>   | <anniefriar@berkeley.edu>    |
+Mike Khor                 |         Gary Kong          |       Dr. Farid Gholitabar        |         Annie Friar          |
+<mike.khor@berkeley.edu>  |   <garykong@berkeley.edu>  |  <farid.gholitabar@berkeley.edu>  |  <anniefriar@berkeley.edu>   |
 
 ## Contributions
 

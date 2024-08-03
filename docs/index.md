@@ -4,7 +4,7 @@ We developed a conversational AI that assists patients with heart failure (HF) w
 
 RECO aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
 
-[![RECO Demo](docs/images/Reco_Demo_Thumbnail.png)](https://www.youtube.com/watch?v=9YP-0eKTouY "RECO Demo")
+[![RECO Demo](images/Reco_Demo_Thumbnail.png)](https://www.youtube.com/watch?v=9YP-0eKTouY "RECO Demo")
 
 ## Features
 

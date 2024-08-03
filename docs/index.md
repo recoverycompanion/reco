@@ -34,22 +34,17 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
 <table>
-  </tr>
+  <tr>
     <td><img src="images/Team_Member_Photos/Mike_Khor.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Gary_Kong.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" width=200></td>
     <td><img src="images/Team_Member_Photos/Annie_Friar.png" img width=200></td>
   </tr>
-    <tr>
-    <td><center>Mike Khor</center></td>
-    <td><center>Gary Kong</center></td>
-    <td><center>Dr. Farid Gholitabar</center></td>
-    <td><center>Annie Friar</center></td>
-  </tr>
-    <td><center><sub><sup>mike.khor@berkeley.edu</sup></sub></center></td>
-    <td><center><sub><sup>garykong@berkeley.edu</sup></sub></center></td>
-    <td><center><sub><sup>farid.gholitabar@berkeley.edu</sup></sub></center></td>
-    <td><center><sub><sup>anniefriar@berkeley.edu</sup></sub></center></td>
+  <tr>
+    <td><center><a href="mailto:mike.khor@berkeley.edu">Mike Khor</a></center></td>
+    <td><center><a href="mailto:garykong@berkeley.edu">Gary Kong</a></center></td>
+    <td><center><a href="mailto:anniefriar@berkeley.edu">Gary Kong</a></center></td>
+    <td><center><a href="mailto:farid.gholitabar@berkeley.edu">Dr. Farid Gholitabar</a></center></td>
   </tr>
  </table>
 

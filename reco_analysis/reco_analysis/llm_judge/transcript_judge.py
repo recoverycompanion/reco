@@ -16,7 +16,7 @@ load_dotenv()
 
 # Define the system message for the evaluation
 
-symptom_ask_description = "Did the DOCTOR ask about {symptom}?"
+symptom_ask_description = "Did the DOCTOR ask about '{symptom}' and was successful in getting a confirmation from PATIENT on whether the PATIENT experiences it?"
 
 judge_criteria = {
     # introduction
@@ -72,20 +72,25 @@ The PATIENT bot quality however does depend on its own prompt (PATIENT_PROMPT).
 
 CRITERIA (column name, then a description):
 """ + "\n".join(
-    [f"{k}, {v}" for k, v in judge_criteria.items()]
+    [f"'{k}': {v}" for k, v in judge_criteria.items()]
 )
 
 output_csv_format = """Generate a CSV row with the appropriate 1 or 0 for each criteria in the order specified below."""
 
-output_reasoning_format = """In separate lines, state each criteria's value (1 or 0) and briefly explain your reasoning if it's a 0. When explaining reasoning, be very specific and please refer to texts in the TRANSCRIPT that is the offender. If it's a 1 (yes), leave the reasoning empty.
-Lastly, in one last new line, please provide any short additional observations or suggestions for improvement (1 sentence), but do not repeat evaluation points previously made.
+output_reasoning_format = """FORMAT: In separate lines, do the following:
+1. first, state the criteria you're evaluating
+2. second, make a brief assessment of the criteria on the TRANSCRIPT to justify your decision. After explaining your assessment/reasoning, end the line with 'criteria passed hence the score is 1' or 'criteria failed hence the score is 0'.
+3. third, state each criteria's value (1 or 0).
+Additionally, if there are issues that result in a 0, be very specific in your assessment portion and please refer to texts in the TRANSCRIPT that is the offender. If it's a 1 (yes), keep your assessment very short.
+Lastly, after all criterias are evaluated, in one last new line, please provide any short additional observations or suggestions for improvement (2 sentences), but do not repeat evaluation points previously made.
 For example:
-patient_name,1,""
-dyspnea,1,""
-pnd,0,"The DOCTOR did not ask about PND in the conversation."
-sympathetic_patient,0,"The DOCTOR ignored after PATIENT writes 'I am feeling light-headed.'"
-consistent_symptoms,0,"The PATIENT says 'I have chest pain' but later says 'I have no chest pain.'"
-write your one-sentence observation/improvement here
+
+patient_name,"The DOCTOR greeted the PATIENT by name; criteria passed hence the score is 1",1
+dyspnea,"The DOCTOR was successful in getting a confirmation from the PATIENT that they don't have dyspnea or shortness of breath; criteria passed hence the score is 1",1
+pnd,"The DOCTOR did not ask about PND in the conversation; criteria failed hence the score is 0",0
+sympathetic_patient,"The DOCTOR ignored PATIENT after PATIENT writes 'I am feeling light-headed'; criteria failed hence the score is 0",0
+consistent_symptoms,"The PATIENT says 'I have chest pain' but later says 'I have no chest pain'; criteria failed hence the score is 0",0
+OBSERVATION:write your two-sentence observation/improvement here
 """
 
 human_message_transcript_judge = """
@@ -141,6 +146,16 @@ class TranscriptJudgeEvaluation:
     allow_doctor_questions: ScoreReasoning
     observations: str
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(score={self.overall_score()}, observations={self.observations})"
+
+    def score_reasonings(self) -> dict[str, ScoreReasoning]:
+        return {
+            k: getattr(self, k)
+            for k in self.__dataclass_fields__.keys()
+            if isinstance(getattr(self, k), ScoreReasoning)
+        }
+
     def to_dict(self):
         return {
             "patient_name": self.patient_name.value,
@@ -195,9 +210,20 @@ class TranscriptJudgeEvaluation:
             "observations": self.observations,
         }
 
+    def passed_criteria(self) -> dict[str, ScoreReasoning]:
+        return {k: v for k, v in self.score_reasonings().items() if v.value == 1}
+
+    def failed_criteria(self) -> dict[str, ScoreReasoning]:
+        return {k: v for k, v in self.score_reasonings().items() if v.value == 0}
+
+    def overall_score(self) -> float:
+        all_scores = self.score_reasonings()
+        sum_scores = sum([v.value if v.value is not None else 0 for v in all_scores.values()])
+        return sum_scores / len(all_scores)
+
 
 class TranscriptJudge:
-    def __init__(self, model_name="gpt-4o-2024-05-13"):
+    def __init__(self, model_name="gpt-4o-mini"):
         self.model = ChatOpenAI(temperature=0.0, model_name=model_name)
         self.cache: dict[tuple[str, str], TranscriptJudgeEvaluation] = defaultdict(dict)
 
@@ -208,31 +234,57 @@ class TranscriptJudge:
         return hash_obj.hexdigest()
 
     @staticmethod
-    def parse_response(
-        response_content: str, expected_fields=len(judge_criteria)
-    ) -> TranscriptJudgeEvaluation:
-        response_list = response_content.split("\n")[0:expected_fields]
-        if len(response_list) != expected_fields:
-            return {"error": "Invalid response count"}
-        response_dict = {}
+    def parse_response(response_content: str):
+        """
+        Function to validate and parse the response.
+
+        Example response
+        'intro_patient,1,""\n'
+        'current_symptoms,1,""\n'
+        'symptoms_agree,0,"Nose bleeding was mentioned in the summary, but not in the transcript."\n'
+
+        Args:
+            response_content (str): Response content from the LLM
+
+        Returns:
+            TranscriptJudgeEvaluation: A dataclass object with the parsed response
+        """
+        response_list = response_content.split("\n")
+        response_dict: dict[str, ScoreReasoning | str] = {}
         for response in response_list:
             if response:
-                # split by first two commas, but keep the rest of the string
-                response_split = response.split(",", 2)
-                response_dict[response_split[0]] = ScoreReasoning(
-                    value=int(response_split[1]), reasoning=response_split[2].strip('"')
-                )
+                try:
+                    (criteria, back_split) = response.split(",", 1)
+                    (reasoning, value) = back_split.rsplit(",", 1)
+                    response_dict[criteria] = ScoreReasoning(
+                        value=int(value),
+                        reasoning=reasoning.strip('"'),
+                    )
+                except ValueError:
+                    # print(f"Error parsing response: {response}")
+                    pass
 
-        # remainder text is the observations
-        response_dict["observations"] = "\n".join(
-            response_content.split("\n")[expected_fields:]
-        ).strip()
+        # additional wrangling on all:
+        # find phrase 'criteria passed hence the score is 1' and 'criteria failed hence the score is 0'
+        # if found, override the value with 1 or 0
+        for key, value in response_dict.items():
+            if "criteria passed hence the score is 1" in value.reasoning:
+                response_dict[key].value = 1
+            elif "criteria failed hence the score is 0" in value.reasoning:
+                response_dict[key].value = 0
 
         # if there are any missing fields, fill them with None
         for field in judge_criteria.keys():
             if field not in response_dict:
                 response_dict[field] = ScoreReasoning(value=None, reasoning=None)
                 print(f"Missing field: {field}")
+
+        # find a line that starts with 'observation:' and use it as the observation
+        response_dict["observations"] = ""
+        for line in response_content.split("\n"):
+            if line.lower().startswith("observation:"):
+                response_dict["observations"] = line.split(":", 1)[1].strip()
+                break
 
         return TranscriptJudgeEvaluation(**response_dict)
 
@@ -319,13 +371,13 @@ if __name__ == "__main__":
 
     from reco_analysis.chatbot import prompts
 
-    judge = TranscriptJudge(model_name="gpt-3.5-turbo")  # cheaper model for testing
+    judge = TranscriptJudge()  # cheaper model for testing
 
     # import data from hidden S3 folder
     module_path = os.path.dirname(os.path.abspath(__file__))
     transcripts_version = "1.0"
     transcripts_json_file_path = (
-        module_path + "/../data/patients/patients_1.0_with_transcripts.json"
+        module_path + "/../../data/patients/patients_1.0_with_transcripts.json"
     )
     with open(transcripts_json_file_path, "r") as json_file:
         transcripts = json.load(json_file)

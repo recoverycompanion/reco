@@ -70,7 +70,7 @@ RECO is a capstone project developed by a team of us at the University of Califo
 
 ## Acknowledgements
 
-We would like to thank our course instructors (Professors Joyce Schen, Zona Kostic), the UC Berkeley I School, and all those who provided invaluable feedback and support throughout the project.
+We would like to thank our course instructors (Professors Joyce Shen, Zona Kostic), the UC Berkeley I School, and all those who provided invaluable feedback and support throughout the project.
 
 ## Contributions
 

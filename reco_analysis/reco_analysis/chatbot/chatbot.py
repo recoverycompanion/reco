@@ -130,7 +130,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
         return SESSION_STORE[session_id]
 
 
-model = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+model = ChatOpenAI(temperature=0.7, model_name="gpt-4o-mini")
 
 
 class DialogueAgent:

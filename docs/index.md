@@ -4,14 +4,13 @@
 Heart failure affects 1 in 33 Americans. Patients often experience worsening symptoms soon after hospital discharge, which can lead to rehospitalization. Nearly 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually. Resource constraints and the limitations of form-based methods of post-discharge monitoring often result in reactive rather than proactive care, leading to avoidable hospital readmissions.
 
 ## Product Overview
-RECO: Recovery Companion is designed to reduce hospital readmissions by providing continuous, AI-driven monitoring and support for heart failure patients after discharge. The platform gathers clinically relevant data—such as symptoms, vital signs, and medication adherence—and compiles this information into structured reports for physicians. This proactive approach ensures better continuity of care and enables timely interventions.
+RECO: Recovery Companion is designed to reduce hospital readmissions by providing continuous, AI-driven monitoring and support for heart failure patients. It collects clinically relevant data—such as symptoms, vital signs, and medication adherence—and compiles this information into structured reports for physicians.
 <p align="center">
     <img src="images/MVP_Benefits.png" img width="75%"/>
 </p>
 
 ## Architecture
-RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring.
-
+RECO’s architecture integrates a user interface, chatbot, database, and summarization engine.
 <p align="center">
     <img src="images/Overall_Architecture_Cropped.png" img width="75%"/>
 </p>

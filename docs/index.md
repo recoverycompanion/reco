@@ -29,7 +29,7 @@ Development of the RECO system involved simulating conversations with synthetic 
 </p>
 
 #### Synthetic Patients & Conversation Simulation
-We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. The patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that serve as data for evaluation and as input to the summarizer.
+We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. This patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that are used both for evaluation and as input for the summarizer.
 
 #### Evaluation & Iterative Improvement
 Evaluation criteria focused on the system’s ability to gather relevant patient data, exhibit empathy, and ensure summarization accuracy. These criteria were first applied in manual human evaluations of RECO-generated transcripts and summaries.

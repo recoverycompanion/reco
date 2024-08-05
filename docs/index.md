@@ -16,10 +16,10 @@ RECO’s architecture seamlessly integrates a user interface, chatbot, database,
     <img src="images/Overall_Architecture_Cropped.png" img width="75%"/>
 </p>
 
-### Chatbot
+#### Chatbot
 The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment.
 
-### Summarizer
+#### Summarizer
 The summarization engine analyzes the conversation transcript using a system prompt with GPT-4o-mini, extracting key details like symptoms, vitals, and medication adherence. It then distills this information into structured summaries that are formatted and emailed as PDF reports to physicians.
 
 ## Modeling Approach
@@ -28,10 +28,10 @@ Development of the RECO system involved simulating conversations with synthetic 
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>
 
-### Synthetic Patients & Conversation Simulation
+#### Synthetic Patients & Conversation Simulation
 We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. The patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that serve as data for evaluation and as input to the summarizer.
 
-### Evaluation
+#### Evaluation
 Evaluation criteria focused on the system’s ability to gather relevant patient data, exhibit empathy, and ensure summarization accuracy. These criteria were first applied in manual human evaluations of RECO-generated transcripts and summaries. To complement this, an LLM-as-a-judge system was implemented to automatically assess the transcripts and summaries against the same criteria. This system was validated against human evaluation results, enabling scalable and iterative improvements to the RECO system once it was confirmed to align with human judgment.
 
 <p align="center">

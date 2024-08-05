@@ -10,16 +10,13 @@ RECO: Recovery Companion is designed to reduce hospital readmissions by providin
 </p>
 
 ## Architecture
-RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring.
+RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring:
+- **Chatbot:** The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment.
+- **Summarizer:** After the patient and chatbot complete their conversation, the transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information. These summaries are then formatted into PDF reports which are emailed to physicians.
+
 <p align="center">
     <img src="images/Overall_Architecture.png" img width="75%"/>
 </p>
-
-### Chatbot
-The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment. The system prompt ensures that the chatbot covers all necessary aspects of a patient’s condition, including symptoms, vitals, and medication adherence.
-
-### Summarizer
-The RECO summarization engine processes conversation transcripts to produce concise, clinically relevant summaries. After the patient and chatbot complete their conversation, the transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information. These summaries are then formatted into PDF reports which are emailed to physicians.
 
 ## Modeling Approach
 The development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.

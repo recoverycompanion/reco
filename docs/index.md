@@ -13,7 +13,7 @@ RECO: Recovery Companion is designed to reduce hospital readmissions by providin
 RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring:
 
 <p align="center">
-    <img src="images/Overall_Architecture.png" img width="75%"/>
+    <img src="images/Overall_Architecture_Cropped.png" img width="75%"/>
 </p>
 
 ### Chatbot

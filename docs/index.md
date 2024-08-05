@@ -48,7 +48,7 @@ RECO provides three key benefits that address current pain points in post-discha
 - **Patient Engagement:** Studies show and patients agree: the chatbot is easier and more straightforward than traditional forms.
 
 # Learn More
-For further details, visit <https://www.slideshare.net/secret/FWIu2e4jjTyvmL> for a more detailed presentation.
+For an in-depth presentation, visit [this link](https://www.slideshare.net/secret/FWIu2e4jjTyvmL).
 
 # Team
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.

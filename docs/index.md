@@ -4,7 +4,7 @@
 Heart failure affects 1 in 33 Americans. Patients often experience worsening symptoms soon after hospital discharge, which can lead to rehospitalization. Nearly 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually. Resource constraints and the limitations of form-based post-discharge monitoring often result in reactive rather than proactive care, leading to avoidable hospital readmissions.
 
 ## Product Overview
-RECO: Recovery Companion is designed reduces hospital readmissions by providing continuous, AI-driven monitoring and support for heart failure patients after discharge. The platform gathers clinically relevant data—such as symptoms, vital signs, and medication adherence—and compiles this information into structured reports for physicians. This proactive approach ensures better continuity of care and enables timely interventions.
+RECO: Recovery Companion is designed to reduce hospital readmissions by providing continuous, AI-driven monitoring and support for heart failure patients after discharge. The platform gathers clinically relevant data—such as symptoms, vital signs, and medication adherence—and compiles this information into structured reports for physicians. This proactive approach ensures better continuity of care and enables timely interventions.
 <p align="center">
     <img src="images/MVP_Benefits.png" img width="75%"/>
 </p>
@@ -23,16 +23,16 @@ The RECO system includes a chatbot designed to simulate a doctor’s role in col
 The RECO system includes a summarization engine that processes patient-doctor interaction transcripts to produce concise, clinically relevant summaries. After the patient and chatbot complete their conversation, the conversation transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information for physicians. These summaries are then formatted into PDF reports which are emailed to physicians.
 
 ### Modeling Approach
-The development of the RECO system incorporates use of simulated conversations with synthetic patients, and a combination of human and *LLM-as-a-judge* evaluation.
+The development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.
 <p align="center">
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>
 
 #### Synthetic Patients & Conversation Simulation
-To test the effectiveness of the chatbot, we simulated chatbot-patient conversations using a synthetic patient bot which interacts with the RECO chatbot. The synthetic patient bot is modeled using anonymized real-world data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who hesitates or withholds details. These simulations generate transcripts that reflect actual patient scenarios, providing valuable data to evaluate the chatbot’s ability to navigate different patient behaviors and effectively collect necessary information.
+To test the effectiveness of the chatbot, we simulated chatbot-patient conversations using a synthetic patient bot which interacts with the RECO chatbot. The synthetic patient bot is modeled using anonymized real-world data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who hesitates or withholds details. These simulations generate transcripts that reflect actual patient scenarios, providing data to evaluate the chatbot’s ability to navigate different patient behaviors and effectively collect necessary information.
 
 #### Evaluation
-Evaluation criteria were developed based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were applied in manual human evaluation of RECO-generated transcripts and summaries. We also created an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against the evaluation criteria. This system was iterated upon and validated against human evaluation results, ensuring it matched human judgment on most evaluation criteria. With a validated *LLM-as-a-judge* system in place, we were able to make scalable, iterative improvements to the RECO system.
+Evaluation criteria were developed based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were applied in manual human evaluation of RECO-generated transcripts and summaries. An *LLM-as-a-judge* system was created to automatically assess the transcripts and summaries against the evaluation criteria. This system validated against human evaluation results, ensuring it closely matched human judgment on evaluation criteria. With a validated *LLM-as-a-judge* system in place, we were able to make scalable, iterative improvements to the RECO system.
 
 <p align="center">
     <img src="images/Model_Evaluation.png" img width="75%"/>
@@ -53,7 +53,7 @@ If you would like a live demo, please reach out to <reco.recovery.companion@gmai
 RECO addresses key challenges in post-discharge heart failure management by providing:
 - **Enhanced Decision-Making:** Doctors receive concise summaries, facilitating quicker and better-informed clinical decisions.
 - **Scalability:** The system allows for the management of larger patient volumes without overburdening healthcare providers.
-- **Patient Engagement:** Studies show and patients agree: the chatbot is easier and more straightforward than traditional forms.
+- **Patient Engagement:** Studies and patient feedback indicate that the chatbot is easier and more straightforward than traditional forms.
 
 ## Learn More
 View the detailed presentation on [SlideShare](https://www.slideshare.net/secret/FWIu2e4jjTyvmL).

@@ -49,7 +49,7 @@ View our product demo by clicking the thumbnail below.
 
 If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
 
-## Key Project Impact
+## Project Impact
 RECO addresses key challenges in post-discharge heart failure management by providing:
 - **Enhanced Decision-Making:** Doctors receive concise summaries, facilitating quicker and better-informed clinical decisions.
 - **Scalability:** The system allows for the management of larger patient volumes without overburdening healthcare providers.

@@ -9,29 +9,28 @@ RECO: Recovery Companion is designed to reduce hospital readmissions by providin
     <img src="images/MVP_Benefits.png" img width="75%"/>
 </p>
 
-## System Design and Implementation
-### Architecture
+## Architecture
 RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring.
 <p align="center">
     <img src="images/Overall_Architecture.png" img width="75%"/>
 </p>
 
-#### Chatbot
-The RECO system includes a chatbot designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the RECO chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment. The system prompt ensures that the chatbot covers all necessary aspects of a patient’s condition, including symptoms, vitals, and medication adherence.
+### Chatbot
+The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment. The system prompt ensures that the chatbot covers all necessary aspects of a patient’s condition, including symptoms, vitals, and medication adherence.
 
-#### Summarizer
-The RECO system includes a summarization engine that processes conversation transcripts to produce concise, clinically relevant summaries. After the patient and chatbot complete their conversation, the transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information. These summaries are then formatted into PDF reports which are emailed to physicians.
+### Summarizer
+The RECO summarization engine processes conversation transcripts to produce concise, clinically relevant summaries. After the patient and chatbot complete their conversation, the transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information. These summaries are then formatted into PDF reports which are emailed to physicians.
 
-### Modeling Approach
+## Modeling Approach
 The development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.
 <p align="center">
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>
 
-#### Synthetic Patients & Conversation Simulation
+### Synthetic Patients & Conversation Simulation
 We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. The patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that serve as data for evaluation and as input to the summarizer.
 
-#### Evaluation
+### Evaluation
 Evaluation criteria focused on the system’s ability to gather relevant patient data, exhibit empathy, and ensure summarization accuracy. These criteria were first applied in manual human evaluations of RECO-generated transcripts and summaries. To complement this, an LLM-as-a-judge system was implemented to automatically assess the transcripts and summaries against the same criteria. This system was validated against human evaluation results, enabling scalable and iterative improvements to the RECO system once it was confirmed to align with human judgment.
 
 <p align="center">

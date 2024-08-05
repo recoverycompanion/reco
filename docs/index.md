@@ -29,10 +29,10 @@ The development of the RECO system involved simulating conversations with synthe
 </p>
 
 #### Synthetic Patients & Conversation Simulation
-To test the effectiveness of the chatbot, we simulated chatbot-patient conversations using a synthetic patient bot which interacts with the RECO chatbot. The synthetic patient bot is modeled using anonymized real-world data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who hesitates or withholds details. These simulations generate transcripts that reflect actual patient scenarios, providing data to evaluate the chatbot’s ability to navigate different patient behaviors and effectively collect necessary information.
+We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. The patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that serve as data for evaluation and as input to the summarizer.
 
 #### Evaluation
-Evaluation criteria were developed based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were applied in manual human evaluation of RECO-generated transcripts and summaries. An *LLM-as-a-judge* system was created to automatically assess the transcripts and summaries against the evaluation criteria. This system validated against human evaluation results, ensuring it closely matched human judgment on evaluation criteria. With a validated *LLM-as-a-judge* system in place, we were able to make scalable, iterative improvements to the RECO system.
+Evaluation criteria were developed based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were applied in manual human evaluation of RECO-generated transcripts and summaries. An *LLM-as-a-judge* system was created to automatically assess transcripts and summaries against the evaluation criteria, and was validated against human evaluation results. A validated *LLM-as-a-judge* system in place enabled us to make scalable, iterative improvements to the RECO system.
 
 <p align="center">
     <img src="images/Model_Evaluation.png" img width="75%"/>

@@ -25,7 +25,7 @@ The RECO summarization engine analyzes the conversation transcript using a syste
 ## Modeling Approach
 Development of the RECO system involved simulating conversations with synthetic patients, and establishing an automated evaluation system to enable iterative improvements.
 <p align="center">
-    <img src="docs/images/Modelling_Approach.png" img width="75%"/>
+    <img src="docs/images/Modelling_Approach_2.jpeg" img width="75%"/>
 </p>
 
 ### Conversation Simulation

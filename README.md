@@ -1,92 +1,115 @@
 # RECO: Recovery Companion
 
-*Monitoring patients with heart failure on their recovery journey.*
+![RECO logo](reco_analysis/docs/reco_logo.jpeg)
 
-We're developing a chatbot that assists patients with heart failure (HF) who have recently been discharged from the hospital. HF is a condition where the heart struggles to pump blood efficiently, often due to damage or disease affecting the heart's muscle. Patients frequently face worsened symptoms soon after hospital discharge, which if not addressed swiftly, can lead to rehospitalization.
+[_Visit our website!_](https://recoverycompanion.github.io/reco/)
 
-Our chatbot aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information into a structured report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions. The chatbot is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
+___Monitoring patients with heart failure on their recovery journey.___
 
-## Installation
+RECO is a conversational AI app that assists patients with heart failure (HF) who have recently been discharged from the hospital. HF is a condition where the heart struggles to pump blood efficiently, often due to damage or disease affecting the heart's muscle. Patients frequently face worsened symptoms soon after hospital discharge, which if not addressed swiftly, can lead to rehospitalization.
 
-Provide detailed instructions on how to install the project, covering any prerequisites, dependencies, and environmental setup.
+Our conversational AI aims to monitor these patients by routinely asking about their symptoms, vital signs, and medication adherence. It will then compile this information and summarize findings in a structured PDF report for their physician. This proactive approach helps in detecting any worsening of the condition early, potentially prompting timely medical interventions.
+
+The conversational AI is not designed to diagnose conditions or offer medical advice directly to patients but serves as a crucial communication bridge between patients and their healthcare providers.
+
+The project has the following key impacts:
+
+- __Enhanced Decision-Making__: Doctors receive concise daily summaries, facilitating quicker and better-informed clinical decisions.
+- __Scalability__: The system allows for the management of larger patient volumes without overburdening healthcare providers.
+- __Patient Engagement__: Studies show and patients agree -- the chatbot is easier and more straightforward than traditional forms.
+
+If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
+
+## Application Features
+
+This applications has the following features:
+
+1. __Streamlit-based Conversational AI__: A conversational AI interface that asks patients about their symptoms, vital signs, and medication adherence.
+2. __Conversation Session Summarization and Report__: At the end of each session, the app generates a structured PDF report containing organized sections of the patients' symptoms, vital signs, medications, as well as a brief summary of the conversation.
+3. __Data Management__: All conversations and summaries are managed per patient in a PostgreSQL database.
+4. __LLM Validation__: The underlying LLMs used in the conversational AI and summarization engine are validated using LLM-as-a-Judge methodology.
+
+## Setup, Installation, and Usage
+
+To run the application locally, please follow all instructions under "Initial Setup" and "Spinning up the Streamlit App". This assumes that the repo is already cloned to your local machine.
+
+### Initial Setup
+
+This part takes about 30-60 minutes.
+
+#### Python Dependencies
+
+This project uses Poetry to manage Python packages and dependencies. It’s best to make sure you are not already using a virtual environment, especially when installing poetry. Poetry will manage your environment for you.
 
 ```{bash}
-git clone https://github.com/recoverycompanion/reco.git
+pip install poetry
+```
+
+> __Note:__ If you’re using Anaconda, you can check your environments using `conda info --envs`. To deactivate an Anaconda environment, use `conda deactivate` To install poetry on your machine, follow [these instructions](https://python-poetry.org/docs/) (installation command is `pipx install poetry`).
+
+After installing poetry, run the following to install the project dependencies.
+
+```{bash}
 cd reco_analysis
 make install
 ```
 
-### SSH
+#### Setting up the Database
 
-To SSH into a server, first obtain the SSH key from Mike, titled `jupyter-key.pem`, and place it in your local `~/.ssh` directory. Then, run the following command to set the correct permissions:
-
-```{bash}
-chmod 400 ~/.ssh/jupyter-key.pem
-```
-
-Now you're ready to SSH into the server. Run the following command:
+To set up the database, please install postgresql on your machine first:
 
 ```{bash}
-make ssh
+brew install postgresql
 ```
 
-## Package Management
+Then, create a new user and database:
 
-### Poetry Overview
+```{bash}
+# Create a new user. Change the password to something more secure if needed.
+psql postgres -c "CREATE ROLE reco_admin WITH LOGIN PASSWORD 'averysecurepasswordthatyouwillneverguess';"
+psql postgres -c "ALTER ROLE reco_admin CREATEDB;"
 
-Poetry is a tool that helps us manage Python packages and dependencies seamlessly across our team.
+# Create a new database
+cd reco_analysis  # if not already in the reco_analysis directory
+make create_dev_db
+```
 
-### Initial Setup
+After this step, make a copy of the `.env.example` file and rename it to `.env`. Modify `POSTGRES_DB_DEV_PASSWORD` and any other variables as needed. This is how the app will connect to the database.
 
-First, it’s best to make sure you are not already using a virtual environment, especially when installing poetry. Poetry will manage your environment for you. If you’re using Anaconda, you can check your environments using `conda info --envs`. To deactivate an Anaconda environment, use `conda deactivate` To install poetry on your machine, follow [these instructions](https://python-poetry.org/docs/) (installation command is `pipx install poetry`).
+#### Setting up OpenAI API Key
+
+RECO is an LLM-based application, and fundamentally uses OpenAI's GPT models (GPT 4o and GPT 4o-mini). As such, you will need to set up an OpenAI API key to run the application. Assuming you already have an OpenAI account, you can find/create your API key in the [API Keys dashboard](https://platform.openai.com/api-keys). Once you have your API key, add it to the `.env` file in `OPENAI_API_KEY` and `OPEN_ORG_ID` variables.
+
+#### Setting up "Post Office"
+
+The `post_office.py` module (cute name) is a module in our summarization engine part of RECO that sends out the PDF reports to the patients' healthcare providers. To set up the email server, you will need to add the following variables to the `.env` file: `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`. Because of the variety of email servers, we do not provide further instructions on how to set up the email server, but most generic, non-business Gmail accounts should work (search online for details).
+
+### Spinning up the Streamlit App
+
+Here's how you can simply run the Streamlit app:
+
+```{bash}
+cd reco_analysis  # if you're not already in the reco_analysis directory
+make chatbot_app_up env=DEV
+```
+
+This will start the Streamlit app on your local machine. You can access it by navigating to `http://localhost:8501` in your browser.
+
+## Development
 
 ### Managing Dependencies
 
-Dependencies are managed in the all important pyproject.toml file, which contains the package requirements for our project. If we need another package as we continue working on it, we add it to the pyproject.toml as a requirement. To ensure you have the proper packages for our app, once poetry is installed, navigate to the reco-analysis folder of our repo. In this folder, run `poetry update`. This will have you add the packages needed for our project. To activate a shell with all the requirements met, run `poetry shell`.
+Dependencies are managed in the `pyproject.toml` file, which contains all package requirements for our project.
 
-**EVERYTHING BELOW IS GENERIC AND WILL BE FILLED OUT:**
+To add new packages/dependencies, please add it to `pyproject.toml` via poetry commands.
 
-## Usage
+To activate a shell with all the requirements met, run `poetry shell`. Note that activating a shell is not necessary to run the app.
 
-A few snippets showing the simplest use case for your project. This section can include code blocks or CLI commands:
+### Contributing to RECO
 
-```{python}
-import yourpackage
-```
+Contributions to the project are welcome. Please make a pull request and tag any of the authors listed below for a review.
 
-```{python}
-# Example of using your project
-result = yourpackage.do_something()
-print(result)
-```
-
-```{bash}s
-# Command-line example
-yourcommand --option arg
-```
-
-## Features
-
-Highlight the key features of your project. What makes it stand out?
-
-Feature 1
-Feature 2
-Feature 3
-
-## Contributing
-
-Contributions to the project are welcome. Please ensure that you have read the guidelines in CONTRIBUTING.md before making a pull request.
-
-## Fork the Project
-
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
-Commit your Changes (git commit -m 'Add some AmazingFeature')
-Push to the Branch (git push origin feature/AmazingFeature)
-Open a Pull Request
-License
-Distribute your project under the License. For example:
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+This project's license can be found in the [LICENSE](reco_analysis/LICENSE) file.
 
 ## Authors
 
@@ -99,8 +122,8 @@ RECO is a capstone project developed by a team of us at the University of Califo
 
 ## Acknowledgments
 
-Hat tip to anyone whose code was used. Inspiration etc.
+We would like to thank our course instructors (Professors Joyce Schen, Zona Kostic), the University of California Berkeley School of Information, and all those who provided invaluable feedback and support throughout the project.
 
 ## Contact
 
-For any inquiries, you can reach out by creating an issue in the GitHub repository or directly through our emails.
+For any inquiries or suggestions, you can reach out by creating an issue in the GitHub repository, or by emailing <reco.recovery.companion@gmail.com> or any of the authors' emails.

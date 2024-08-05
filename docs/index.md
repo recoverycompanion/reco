@@ -16,10 +16,10 @@ RECO’s architecture seamlessly integrates a user interface, chatbot, database,
     <img src="images/Overall_Architecture_Cropped.png" img width="75%"/>
 </p>
 
-#### Chatbot
+### Chatbot
 The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment.
 
-#### Summarizer
+### Summarizer
 The RECO summarization engine analyzes the conversation transcript using a system prompt with GPT-4o-mini, extracting key details like symptoms, vitals, and medications. It then distills this information into structured summaries that are formatted and emailed as PDF reports to physicians.
 
 ## Modeling Approach
@@ -28,10 +28,10 @@ Development of the RECO system involved simulating conversations with synthetic 
     <img src="images/Modeling Approach.png" img width="75%"/>
 </p>
 
-#### Conversation Simulation
+### Conversation Simulation
 We simulated chatbot-patient conversations by having the RECO chatbot interact with synthetic patient bots. Synthetic patient bots are modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that are used both for evaluation and as input for the summarizer.
 
-#### Evaluation
+### Evaluation
 We developed an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against evaluation criteria that focused on the system’s ability to gather relevant patient data (symptoms, vitals, and medications), maintain dialogue quality (empathy, refraining from diagnosis), and ensure summarization accuracy. To ensure the reliability of *LLM-as-a-judge*, we compared its outputs (binary classifications) to the ground truth of human judgment and iteratively refined the system to enhance its accuracy.
 
 <p align="center">

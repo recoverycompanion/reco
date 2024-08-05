@@ -19,7 +19,7 @@ RECO’s architecture seamlessly integrates a user interface, chatbot, database,
 </p>
 
 ## Modeling Approach
-The development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.
+Development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.
 <p align="center">
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>

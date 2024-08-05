@@ -1,7 +1,6 @@
 # RECO: Recovery Companion
 
 ## Why Heart Failure?
-
 1 in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually.
 
 ## Product Overview
@@ -26,7 +25,7 @@ RECO uses GPT-4 to simulate doctor-patient interactions. A system prompt guides 
 </p>
 
 ### Chatbot & Summarization Engine Evaluation
-We developed evaluation criteria based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data, exhibit empathy, and ensure summarization accuracy. These criteria were used for manual human evaluation of RECO-generated transcripts and summaries. We also created an LLM-as-a-judge system to automatically assess the transcripts and summaries against the established criteria. This system was iterated upon and validated against human evaluation results, ensuring it matched human judgment on most evaluation criteria. With a validated LLM-as-a-judge system in place, we were able to make scalable, iterative improvements to the RECO system.
+We developed evaluation criteria based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were used for manual human evaluation of RECO-generated transcripts and summaries. We also created an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against the evaluation criteria. This system was iterated upon and validated against human evaluation results, ensuring it matched human judgment on most evaluation criteria. With a validated *LLM-as-a-judge* system in place, we were able to make scalable, iterative improvements to the RECO system.
 
 <p align="center">
     <img src="images/Model_Evaluation.png" img width="75%"/>

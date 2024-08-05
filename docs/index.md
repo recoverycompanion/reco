@@ -1,3 +1,5 @@
+# RECO: Recovery Companion
+
 ## Why Heart Failure?
 Heart failure affects 1 in 33 Americans. Patients often experience worsening symptoms soon after hospital discharge, which can lead to rehospitalization. Nearly 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually. Resource constraints and the limitations of form-based methods of post-discharge monitoring often result in reactive rather than proactive care, leading to avoidable hospital readmissions.
 

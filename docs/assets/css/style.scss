@@ -1,5 +1,10 @@
 ---
 ---
+/* Import Raleway Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap');
+
+/* Set Raleway as the default font */
+$body-font-family: 'Raleway', sans-serif !default;
 
 /* Override default Sass variables before importing the theme */
 // Headers

@@ -1,0 +1,47 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Custom CSS */
+body {
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #EB5D48; /* Heading color */
+}
+
+a {
+    color: #11A9E2; /* Link color */
+}
+
+a:hover {
+    color: #EB5D48; /* Optional: Change link color on hover to match heading color */
+}
+
+.navbar {
+    background-color: #ffffff; /* White background for navbar */
+    color: #000000; /* Black text in navbar */
+    border-color: #EB5D48; /* Accent color for borders in navbar */
+}
+
+.header, .footer {
+    background-color: #ffffff; /* Match the body background */
+    color: #000000; /* Black text in headers/footers */
+}
+
+.sidebar {
+    background-color: #ffffff; /* White background for sidebar */
+    color: #000000; /* Black text in sidebar */
+}
+
+table {
+    border-color: #000000; /* Black for table borders */
+}
+
+th, td {
+    border-color: #000000; /* Consistent border color */
+    color: #000000; /* Ensure table text is black */
+}

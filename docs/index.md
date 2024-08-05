@@ -63,18 +63,18 @@ RECO is a capstone project developed by a team of us at the University of Califo
 
 <table>
   <tr>
-    <td><img src="images/Team_Member_Photos/Mike_Khor.png" width=200></td>
-    <td><img src="images/Team_Member_Photos/Gary_Kong.png" width=200></td>
-    <td><img src="images/Team_Member_Photos/Annie_Friar.png" img width=200></td>
-    <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" width=200></td>
+    <td><img src="images/Team_Member_Photos/Mike_Khor.png" width="200"></td>
+    <td><img src="images/Team_Member_Photos/Gary_Kong.png" width="200"></td>
+    <td><img src="images/Team_Member_Photos/Annie_Friar.png" width="200"></td>
+    <td><img src="images/Team_Member_Photos/Farid_Gholitabar.png" width="200"></td>
   </tr>
   <tr>
-    <td><center><a href="mailto:mike.khor@berkeley.edu">Mike Khor</a></center></td>
-    <td><center><a href="mailto:garykong@berkeley.edu">Gary Kong</a></center></td>
-    <td><center><a href="mailto:anniefriar@berkeley.edu">Annie Friar</a></center></td>
-    <td><center><a href="mailto:farid.gholitabar@berkeley.edu">Dr. Farid Gholitabar</a></center></td>
+    <td style="text-align: center;"><a href="mailto:mike.khor@berkeley.edu">Mike Khor</a></td>
+    <td style="text-align: center;"><a href="mailto:garykong@berkeley.edu">Gary Kong</a></td>
+    <td style="text-align: center;"><a href="mailto:anniefriar@berkeley.edu">Annie Friar</a></td>
+    <td style="text-align: center;"><a href="mailto:farid.gholitabar@berkeley.edu">Dr. Farid Gholitabar</a></td>
   </tr>
- </table>
+</table>
 
 ## Acknowledgements
 We would like to thank our course instructors (Professors Joyce Shen, Zona Kostic), the UC Berkeley I School, and all those who provided invaluable feedback and support throughout the project.

@@ -1,47 +1,26 @@
 ---
 ---
 
+/* Override default Sass variables before importing the theme */
+// Headers
+$header-heading-color: #EB5D48 !default; /* New heading color */
+$header-bg-color: #EB5D48 !default;
+$header-bg-color-secondary: #F5A58D !default;
+
+// Text
+$section-heading-color: #EB5D48 !default; /* New heading color */
+$body-text-color: #000000 !default; /* Black text color */
+$body-link-color: #11A9E2 !default; /* Custom link color */
+$blockquote-text-color: #EB5D48 !default; /* New blockquote text color */
+
+// Code
+$code-bg-color: #f3f6fa !default;
+$code-text-color: #567482 !default;
+
+// Borders
+$border-color: #dce6f0 !default;
+$table-border-color: #e9ebec !default;
+$hr-border-color: #eff0f1 !default;
+
+/* Import the Cayman theme styles */
 @import "{{ site.theme }}";
-
-/* Custom CSS */
-body {
-    background-color: #ffffff; /* White background */
-    color: #000000; /* Black text */
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: #EB5D48; /* Heading color */
-}
-
-a {
-    color: #11A9E2; /* Link color */
-}
-
-a:hover {
-    color: #EB5D48; /* Optional: Change link color on hover to match heading color */
-}
-
-.navbar {
-    background-color: #ffffff; /* White background for navbar */
-    color: #000000; /* Black text in navbar */
-    border-color: #EB5D48; /* Accent color for borders in navbar */
-}
-
-.header, .footer {
-    background-color: #ffffff; /* Match the body background */
-    color: #000000; /* Black text in headers/footers */
-}
-
-.sidebar {
-    background-color: #ffffff; /* White background for sidebar */
-    color: #000000; /* Black text in sidebar */
-}
-
-table {
-    border-color: #000000; /* Black for table borders */
-}
-
-th, td {
-    border-color: #000000; /* Consistent border color */
-    color: #000000; /* Ensure table text is black */
-}

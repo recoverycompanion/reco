@@ -29,7 +29,7 @@ Development of the RECO system involved simulating conversations with synthetic 
 </p>
 
 #### Conversation Simulation
-We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. This patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that are used both for evaluation and as input for the summarizer.
+We simulated chatbot-patient conversations by having the RECO chatbot interact with synthetic patient bots. Synthetic patient bots are modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that are used both for evaluation and as input for the summarizer.
 
 #### Evaluation
 We developed an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against evaluation criteria that focused on the system’s ability to gather relevant patient data (symptoms, vitals, and medications), maintain dialogue quality (empathy, refraining from diagnosis), and ensure summarization accuracy. To ensure the reliability of *LLM-as-a-judge*, we compared its outputs (binary classifications) to the ground truth of human judgment and iteratively refined the system to enhance its accuracy.

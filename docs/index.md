@@ -1,37 +1,35 @@
-# RECO: Recovery Companion
+# Why Heart Failure?
+1 in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of hospital discharge, costing the healthcare system billions annually. This issue is exacerbated by resource constraints and limitations of form-based methods for monitoring patients post discharge, leading to reactive approaches to post-discharge care that lead to avoidable hospital readmissions.
 
-## Why Heart Failure?
-1 in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually.
-
-## Product Overview
-RECO is designed to reduce readmission rates through continuous, AI-driven monitoring and support for heart failure patients. The platform gathers clinically relevant data, including symptoms, vital signs, and medication adherence, and compiles this information into structured reports for physicians.
+# Product Overview
+The RECO Recovery Companion aims to reduce hospital readmissions by providing continuous, generative AI-driven monitoring and support for heart failure patients after hospital discharge. The platform gathers clinically relevant data, including symptoms, vital signs, and medication adherence, and compiles this information into structured reports for physicians. This solution aims to ensure better continuity of care and reduce readmission rates by enabling timely interventions. 
 
 <p align="center">
     <img src="images/MVP_Benefits.png" img width="75%"/>
 </p>
 
-## Technology and Architecture
-### Technical Architecture
+# Technology and Architecture
+## Technical Architecture
 RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring.
 
 <p align="center">
     <img src="images/Overall_Architecture.png" img width="75%"/>
 </p>
 
-### Conversation Generation
+## Conversation Generation
 RECO uses GPT-4 to simulate doctor-patient interactions. A system prompt guides the RECO chatbot to collect patient information as a doctor would in a routine appointment. A synthetic patient bot, modeled using anonymized real-world data from MIMIC-IV, interacts with the chatbot to generate dialogues that reflect actual heart failure patient-doctor interactions. Transcripts from these synthetic conversations are then a) evaluated to test the effectiveness of the chatbot, and b) processed by the summarization engine to produce summary reports.
 <p align="center">
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>
 
-### Chatbot & Summarization Engine Evaluation
+## Chatbot & Summarization Engine Evaluation
 We developed evaluation criteria based on insights from domain experts, focusing on the chatbot’s ability to gather relevant patient data and exhibit empathy, as well as summarization accuracy. These criteria were used for manual human evaluation of RECO-generated transcripts and summaries. We also created an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against the evaluation criteria. This system was iterated upon and validated against human evaluation results, ensuring it matched human judgment on most evaluation criteria. With a validated *LLM-as-a-judge* system in place, we were able to make scalable, iterative improvements to the RECO system.
 
 <p align="center">
     <img src="images/Model_Evaluation.png" img width="75%"/>
 </p>
 
-## See RECO in Action
+# See RECO in Action
 View our product demo by clicking the thumbnail below.
 
 <p align="center">
@@ -40,19 +38,19 @@ View our product demo by clicking the thumbnail below.
     </a>
 </p>
 
-## Key Project Impact
-- **Improved Data Accuracy:** The summarization engine minimizes human error and provides consistent, relevant information for healthcare providers.
+## Request a Live Demo
+If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
+
+# Key Project Impact
+RECO provides three key benefits that address current pain points in post-discharge heart failure management:
 - **Enhanced Decision-Making:** Doctors receive concise summaries, facilitating quicker and better-informed clinical decisions.
 - **Scalability:** The system allows for the management of larger patient volumes without overburdening healthcare providers.
 - **Patient Engagement:** Studies show and patients agree: the chatbot is easier and more straightforward than traditional forms.
 
-## Learn More
+# Learn More
+For further details, visit <https://www.slideshare.net/secret/FWIu2e4jjTyvmL> for a more detailed presentation.
 
-## Request a Live Demo
-If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
-
-## Team
-
+# Team
 RECO is a capstone project developed by a team of us at the University of California, Berkeley as part of our Master of Information and Data Science program.
 
 <table>
@@ -70,12 +68,10 @@ RECO is a capstone project developed by a team of us at the University of Califo
   </tr>
  </table>
 
-## Acknowledgements
-
+# Acknowledgements
 We would like to thank our course instructors (Professors Joyce Shen, Zona Kostic), the UC Berkeley I School, and all those who provided invaluable feedback and support throughout the project.
 
-## Contributions
-
+# Contributions
 Contributions are welcome! Feel free to fork the project and submit a pull request. For major changes, please open an issue first to discuss your ideas.
 
 Ensure that appropriate tests are updated when making changes.

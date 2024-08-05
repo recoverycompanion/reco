@@ -38,7 +38,6 @@ View our product demo by clicking the thumbnail below.
     </a>
 </p>
 
-## Request a Live Demo
 If you would like a live demo, please reach out to <reco.recovery.companion@gmail.com>.
 
 # Key Project Impact

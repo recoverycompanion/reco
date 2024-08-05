@@ -31,7 +31,7 @@ We developed an *LLM-as-a-judge* system to automatically assess the transcripts 
     <img src="images/Model_Evaluation.png" img width="75%"/>
 </p>
 
-#### Iterative Improvement
+### Iterative Improvement
 Using the automated evaluation pipeline, we tested and modified RECO's underlying models (e.g., GPT-3.5-turbo vs. GPT-4o-mini vs. GPT-4o) and adjusted prompts to improve conversation quality, such as nudging reluctant patients to provide more information.
 
 ## See RECO in Action

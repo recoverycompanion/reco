@@ -19,7 +19,7 @@ RECO’s architecture seamlessly integrates a user interface, chatbot, database,
 #### Chatbot
 The RECO system includes a chatbot designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the RECO chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment. The system prompt ensures that the chatbot covers all necessary aspects of a patient’s condition, including symptoms, vitals, and medication adherence.
 
-#### Summarization Engine
+#### Summarizer
 The RECO system includes a summarization engine that processes patient-doctor interaction transcripts to produce concise, clinically relevant summaries. After the patient and chatbot complete their conversation, the conversation transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information for physicians. These summaries are then formatted into PDF reports which are emailed to physicians.
 
 ### Modeling Approach

@@ -3,15 +3,15 @@
 
 /* Override default Sass variables before importing the theme */
 // Headers
-$header-heading-color: #fff !default; /* New heading color */
-$header-bg-color: #EB5D48 !default;
-$header-bg-color-secondary: #EB5D48 !default;
+$header-heading-color: #EB5D48 !default; /* New heading color */
+$header-bg-color: #28282E !default;
+$header-bg-color-secondary: #28282E !default;
 
 // Text
 $section-headings-color: #EB5D48 !default; /* New heading color */
 $body-text-color: #000000 !default; /* Black text color */
 $body-link-color: #11A9E2 !default; /* Custom link color */
-$blockquote-text-color: #EB5D48 !default; /* New blockquote text color */
+$blockquote-text-color: #819198 !default;
 
 // Code
 $code-bg-color: #f3f6fa !default;

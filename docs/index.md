@@ -12,7 +12,7 @@ RECO: Recovery Companion is designed to reduce hospital readmissions by providin
 ## Architecture
 RECO’s architecture seamlessly integrates a user interface, chatbot, database, and summarization engine to provide an end-to-end solution for patient monitoring:
 - **Chatbot:** The RECO chatbot is designed to simulate a doctor’s role in collecting patient information. Using a system prompt, the chatbot uses GPT-4o to guide conversations, asking questions and gathering data just as a doctor would during a routine appointment.
-- **Summarizer:** After the patient and chatbot complete their conversation, the transcript is analyzed by the summarization engine, which uses a system prompt fed into GPT-4o-mini. This engine identifies key details related to symptoms, vitals, and medication adherence, distilling them into structured summaries that highlight the most relevant information. These summaries are then formatted into PDF reports which are emailed to physicians.
+- **Summarizer:** The summarization engine analyzes the conversation transcript using a system prompt with GPT-4o-mini, extracting key details like symptoms, vitals, and medication adherence. It then distills this information into structured summaries that are formatted into PDF reports for physicians.
 
 <p align="center">
     <img src="images/Overall_Architecture.png" img width="75%"/>

@@ -29,3 +29,12 @@ $hr-border-color: #eff0f1 !default;
 
 /* Import the Cayman theme styles */
 @import "{{ site.theme }}";
+
+/* Additional custom CSS (optional) */
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', sans-serif;
+}

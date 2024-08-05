@@ -1,4 +1,7 @@
 # RECO: Recovery Companion
+<p align="center">
+    <img src="images/reco_logo.png" img width="8%"/>
+</p>
 
 ## Why Heart Failure?
 
@@ -85,6 +88,4 @@ Contributions are welcome! Feel free to fork the project and submit a pull reque
 
 Ensure that appropriate tests are updated when making changes.
 
-<p align="center">
-    <img src="images/reco_logo.png" img width="8%"/>
-</p>
+

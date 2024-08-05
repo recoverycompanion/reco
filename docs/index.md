@@ -32,9 +32,7 @@ Development of the RECO system involved simulating conversations with synthetic 
 We simulated chatbot-patient conversations by having a synthetic patient bot interact with the RECO chatbot. This patient bot is modeled using anonymized real-world patient data from MIMIC-IV and can take on various personas, including a cooperative patient who readily provides information and a reluctant patient who withholds details. These simulated conversations generate transcripts that are used both for evaluation and as input for the summarizer.
 
 #### Evaluation & Iterative Improvement
-Evaluation criteria focused on the system’s ability to gather relevant patient data, exhibit empathy, and ensure summarization accuracy. These criteria were first applied in manual human evaluations of RECO-generated transcripts and summaries.
-
-To complement this, we developed an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against the same criteria. To ensure the reliability of *LLM-as-a-judge*, we compared its outputs (a binary classification) to its ground truth of human judgment, and iteratively refined the system to increase its accuracy.
+We developed an *LLM-as-a-judge* system to automatically assess the transcripts and summaries against evaluation criteria that focused on the system’s ability to gather relevant patient data (symptoms, vitals, and medications), maintain dialogue quality (empathy, refraining from diagnosis), and ensure summarization accuracy. To ensure the reliability of *LLM-as-a-judge*, we compared its outputs (binary classifications) to the ground truth of human judgment and iteratively refined the system to enhance its accuracy.
 
 Once the automated evaluation pipeline was established, we tested and modified RECO's underlying models (e.g., comparing GPT-3.5-turbo vs. GPT-4o-mini vs. GPT-4o) and adjusted prompts to improve conversation quality, such as nudging reluctant patients to provide more information.
 

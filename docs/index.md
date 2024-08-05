@@ -1,7 +1,7 @@
 # RECO: Recovery Companion
 
 ## Why Heart Failure?
-Heart failure affects 1 in 33 Americans. Patients often experience worsening symptoms soon after hospital discharge, which can lead to rehospitalization. Nearly 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually. Resource constraints and the limitations of form-based post-discharge monitoring often result in reactive rather than proactive care, leading to avoidable hospital readmissions.
+Heart failure affects 1 in 33 Americans. Patients often experience worsening symptoms soon after hospital discharge, which can lead to rehospitalization. Nearly 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually. Resource constraints and the limitations of form-based methods of post-discharge monitoring often result in reactive rather than proactive care, leading to avoidable hospital readmissions.
 
 ## Product Overview
 RECO: Recovery Companion is designed to reduce hospital readmissions by providing continuous, AI-driven monitoring and support for heart failure patients after discharge. The platform gathers clinically relevant data—such as symptoms, vital signs, and medication adherence—and compiles this information into structured reports for physicians. This proactive approach ensures better continuity of care and enables timely interventions.
@@ -23,7 +23,7 @@ The RECO chatbot is designed to simulate a doctor’s role in collecting patient
 The summarization engine analyzes the conversation transcript using a system prompt with GPT-4o-mini, extracting key details like symptoms, vitals, and medication adherence. It then distills this information into structured summaries that are formatted and emailed as PDF reports to physicians.
 
 ## Modeling Approach
-Development of the RECO system involved simulating conversations with synthetic patients and used a combination of human and *LLM-as-a-judge* evaluation.
+Development of the RECO system involved simulating conversations with synthetic patients, and a combination of human and *LLM-as-a-judge* evaluation.
 <p align="center">
     <img src="images/Conversation_Generation_Diagram.png" img width="75%"/>
 </p>

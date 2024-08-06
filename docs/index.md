@@ -1,7 +1,7 @@
 # RECO: Recovery Companion
 
 ## Why Heart Failure?
-1 in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually.
+One in 33 Americans suffer from heart failure. Patients who are hospitalized frequently face worsened symptoms soon after discharge which, if not addressed swiftly, can lead to rehospitalization. Approximately 25% of heart failure patients are readmitted within 30 days of discharge, costing the healthcare system billions annually.
 
 ## Product Overview
 RECO aims to reduce readmission rates by providing continuous, AI-driven monitoring and support for heart failure patients. It collects clinically relevant symptoms information, and then compiles this information into a structured report for their physician.
